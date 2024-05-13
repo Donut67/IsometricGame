@@ -1,0 +1,33 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://c173s61qmwi38"
+path="res://.godot/imported/Eastwood Italic.otf-089726dd74932614b46ae7dfd4e24561.fontdata"
+
+[deps]
+
+source_file="res://Font/Eastwood Italic.otf"
+dest_files=["res://.godot/imported/Eastwood Italic.otf-089726dd74932614b46ae7dfd4e24561.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+hinting=1
+subpixel_positioning=1
+oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
+compress=true
+preload=[]
+language_support={}
+script_support={}
+opentype_features={}
