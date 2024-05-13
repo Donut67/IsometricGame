@@ -1,0 +1,78 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Scripts/PauseMenu.gd" type="Script" id=1]
+[ext_resource path="res://Font/vanilla whale.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 128
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 64
+font_data = ExtResource( 2 )
+
+[node name="PauseMenu" type="Control"]
+pause_mode = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+color = Color( 0, 0, 0, 0.392157 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer2" type="CenterContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 192.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PAUSED" type="Label" parent="CenterContainer2"]
+margin_left = 363.0
+margin_top = 19.0
+margin_right = 660.0
+margin_bottom = 173.0
+custom_fonts/font = SubResource( 1 )
+text = "PauseD"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 256.0
+margin_top = 255.0
+margin_right = 768.0
+margin_bottom = 544.0
+custom_constants/separation = 20
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RESUME" type="Button" parent="VBoxContainer"]
+margin_right = 512.0
+margin_bottom = 83.0
+custom_fonts/font = SubResource( 2 )
+text = "ResumE"
+
+[node name="RESTART" type="Button" parent="VBoxContainer"]
+margin_top = 103.0
+margin_right = 512.0
+margin_bottom = 186.0
+custom_fonts/font = SubResource( 2 )
+text = "RestarT"
+
+[node name="MENU" type="Button" parent="VBoxContainer"]
+margin_top = 206.0
+margin_right = 512.0
+margin_bottom = 289.0
+custom_fonts/font = SubResource( 2 )
+text = "MenU"
+
+[connection signal="pressed" from="VBoxContainer/RESUME" to="." method="_on_RESUME_pressed"]
+[connection signal="pressed" from="VBoxContainer/RESTART" to="." method="_on_RESTART_pressed"]
+[connection signal="pressed" from="VBoxContainer/MENU" to="." method="_on_MENU_pressed"]
