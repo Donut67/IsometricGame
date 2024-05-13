@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Isometric/barrels_N.png" type="Texture" id=1]
+
+[node name="Barrels_N" type="StaticBody2D"]
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0, -150 )
+texture = ExtResource( 1 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PoolVector2Array( -61.3177, 26.7137, -35.7498, 73.0928, 11.2239, 73.0928, 60.576, 29.6867, 62.3598, -3.01648, -62.5069, -2.42188 )
