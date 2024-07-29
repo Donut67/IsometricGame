@@ -28,7 +28,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallAged_S.tscn" id="26"]
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallCorner_N.tscn" id="27"]
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLerf_S.tscn" id="28"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallColumnIn_E.tscn" id="29"]
+[ext_resource type="PackedScene" uid="uid://b3yog1mx0wpvt" path="res://Scenes/StoneWallColumnIn_E.tscn" id="29"]
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedRight_W.tscn" id="30"]
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLert_N.tscn" id="31"]
 [ext_resource type="PackedScene" path="res://Scenes/StoneWallCorner_W.tscn" id="32"]
@@ -66,8 +66,10 @@ position = Vector2(-1976, 3112)
 position = Vector2(-1920, 1344)
 
 [node name="YSort" type="Node2D" parent="."]
+y_sort_enabled = true
 
 [node name="Objectes" type="Node2D" parent="YSort"]
+y_sort_enabled = true
 
 [node name="StoneWallCorner_S" parent="YSort/Objectes" instance=ExtResource("9")]
 y_sort_enabled = true
