@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://b8ivwfw2kctae"]
 
-[ext_resource path="res://Isometric/chestClosed_S.png" type="Texture" id=1]
+[sub_resource type="Resource" id="Resource_s8ehk"]
+metadata/__load_path__ = "res://Isometric/chestClosed_S.png"
 
 [node name="ChestClosed_S" type="StaticBody2D"]
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0, -180 )
-texture = ExtResource( 1 )
+position = Vector2(0, -180)
+texture = SubResource("Resource_s8ehk")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PoolVector2Array( 11.6488, 30.1239, 34.9834, 19.5173, 35.3369, 1.8396, -10.625, -15.4845, -42.0913, 2.19315 )
+polygon = PackedVector2Array(11.6488, 30.1239, 34.9834, 19.5173, 35.3369, 1.8396, -10.625, -15.4845, -42.0913, 2.19315)

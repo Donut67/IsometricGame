@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b5saws1kdm4ac"]
 
-[ext_resource type="Script" path="res://Scripts/EnemyCounter.gd" id="1"]
+[ext_resource type="Script" uid="uid://cdiajdexjuepw" path="res://Scripts/EnemyCounter.gd" id="1"]
 
 [node name="EnemyCounter" type="Control" groups=["EnemyC"]]
 custom_minimum_size = Vector2(0, 23)

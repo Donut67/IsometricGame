@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://d2wey01wxqf5b"]
 
 [ext_resource type="Texture2D" uid="uid://dipsefigjpa61" path="res://Character/valla/arrow.png" id="1"]
-[ext_resource type="Script" path="res://Scripts/Arrow.gd" id="2"]
+[ext_resource type="Script" uid="uid://d0yp2y5nb3wvr" path="res://Scripts/Arrow.gd" id="2"]
 
 [sub_resource type="CapsuleShape2D" id="1"]
 radius = 1.0987

@@ -1,28 +1,21 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bk7aolti4ukoj"]
 
-[ext_resource path="res://Character/Particle.png" type="Texture" id=1]
+[ext_resource type="Texture2D" uid="uid://b4p01dgylefeb" path="res://Character/Particle.png" id="1"]
 
-[sub_resource type="Curve" id=1]
-min_value = -360.0
-max_value = 360.0
-_data = [ Vector2( 0, -360 ), 0.0, 0.0, 0, 0, Vector2( 1, 360 ), 0.0, 0.0, 0, 0 ]
+[sub_resource type="Curve" id="1"]
+_limits = [-360.0, 360.0, 0.0, 1.0]
+_data = [Vector2(0, -360), 0.0, 0.0, 0, 0, Vector2(1, 360), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="CurveTexture" id=2]
-curve = SubResource( 1 )
+[sub_resource type="CurveTexture" id="2"]
+curve = SubResource("1")
 
-[sub_resource type="ParticlesMaterial" id=3]
+[sub_resource type="ParticleProcessMaterial" id="3"]
 emission_shape = 1
 emission_sphere_radius = 1.0
-flag_disable_z = true
 spread = 180.0
-gravity = Vector3( 0, 0, 0 )
-initial_velocity = 45.0
-initial_velocity_random = 0.75
-angular_velocity = 15.0
-angular_velocity_random = 0.2
-angular_velocity_curve = SubResource( 2 )
-orbit_velocity = 0.0
-orbit_velocity_random = 0.0
+angular_velocity_curve = SubResource("2")
+gravity = Vector3(0, 0, 0)
 
 [node name="Explosion" type="Particles2D"]
 emitting = false
@@ -31,5 +24,5 @@ lifetime = 0.75
 one_shot = true
 speed_scale = 2.0
 explosiveness = 0.5
-process_material = SubResource( 3 )
-texture = ExtResource( 1 )
+process_material = SubResource("3")
+texture = ExtResource("1")

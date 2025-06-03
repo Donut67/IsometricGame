@@ -46,4 +46,3 @@ func _end_round():
 	_round += 1
 	_spawn_enemies()
 	get_tree().get_nodes_in_group("Timer")[0]._set_time(90)
-

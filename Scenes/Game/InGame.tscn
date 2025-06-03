@@ -1,42 +1,42 @@
 [gd_scene load_steps=39 format=3 uid="uid://dwwnfgqqbkmtv"]
 
-[ext_resource type="Script" path="res://Scripts/InGame.gd" id="1"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedLeft_E.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedRight_n.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneColumn_E.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallColumn_E.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://Scenes/StackedBarrels_N.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallCarner_E.tscn" id="7"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLerft_E.tscn" id="8"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallCorner_S.tscn" id="9"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallColumn_N.tscn" id="10"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneColumnWood.tscn" id="11"]
-[ext_resource type="PackedScene" path="res://Scenes/Stacked_S.tscn" id="12"]
-[ext_resource type="PackedScene" path="res://Scenes/Barrel_N.tscn" id="13"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedRight_E.tscn" id="14"]
-[ext_resource type="PackedScene" path="res://Scenes/StackedBarrels_E.tscn" id="15"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAged_W.tscn" id="16"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAged_E.tscn" id="17"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLeft_W.tscn" id="18"]
-[ext_resource type="PackedScene" path="res://Scenes/Barrel_E.tscn" id="19"]
+[ext_resource type="Script" uid="uid://cmh1gt4n1q1xo" path="res://Scripts/InGame.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://bsi003ikdplgo" path="res://Scenes/StoneWallAgedLeft_E.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://crarlk5vjcv30" path="res://Scenes/StoneWallAgedRight_n.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dv0el3otfgy0q" path="res://Scenes/StoneColumn_E.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://ctm3ffb5t5udo" path="res://Scenes/StoneWallColumn_E.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://bcevtdnuiovf2" path="res://Scenes/StackedBarrels_N.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://dnwncielxtadb" path="res://Scenes/StoneWallCarner_E.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://c6k6s6go4564a" path="res://Scenes/StoneWallBrokenLerft_E.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://b32nfo28weck4" path="res://Scenes/StoneWallCorner_S.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://cg8qw52nltnat" path="res://Scenes/StoneWallColumn_N.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://dm1srloua27ql" path="res://Scenes/StoneColumnWood.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://b23m6ggahwyla" path="res://Scenes/Stacked_S.tscn" id="12"]
+[ext_resource type="PackedScene" uid="uid://c470jkwgi0u14" path="res://Scenes/Barrel_N.tscn" id="13"]
+[ext_resource type="PackedScene" uid="uid://cvnhmplk1duka" path="res://Scenes/StoneWallAgedRight_E.tscn" id="14"]
+[ext_resource type="PackedScene" uid="uid://crwfljxk6brxs" path="res://Scenes/StackedBarrels_E.tscn" id="15"]
+[ext_resource type="PackedScene" uid="uid://u4m4c6imed3j" path="res://Scenes/StoneWallAged_W.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://chd4ql35t73gu" path="res://Scenes/StoneWallAged_E.tscn" id="17"]
+[ext_resource type="PackedScene" uid="uid://dnfh3171m4w2v" path="res://Scenes/StoneWallBrokenLeft_W.tscn" id="18"]
+[ext_resource type="PackedScene" uid="uid://b77cl55mdlgwm" path="res://Scenes/Barrel_E.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://b1jubpkv3ltgc" path="res://Scenes/Objects/Player.tscn" id="20"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBroken_E.tscn" id="21"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallColumnIn_S.tscn" id="22"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedLeft_N.tscn" id="23"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAged_N.tscn" id="24"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBroken_N.tscn" id="25"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAged_S.tscn" id="26"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallCorner_N.tscn" id="27"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLerf_S.tscn" id="28"]
+[ext_resource type="PackedScene" uid="uid://dkfan3pph46d3" path="res://Scenes/StoneWallBroken_E.tscn" id="21"]
+[ext_resource type="PackedScene" uid="uid://cobcxuuwqhwkv" path="res://Scenes/StoneWallColumnIn_S.tscn" id="22"]
+[ext_resource type="PackedScene" uid="uid://cg5ogjf8jebo" path="res://Scenes/StoneWallAgedLeft_N.tscn" id="23"]
+[ext_resource type="PackedScene" uid="uid://dvvoa80lnu60a" path="res://Scenes/StoneWallAged_N.tscn" id="24"]
+[ext_resource type="PackedScene" uid="uid://bg68fxel4531e" path="res://Scenes/StoneWallBroken_N.tscn" id="25"]
+[ext_resource type="PackedScene" uid="uid://brqrjhxks3pb" path="res://Scenes/StoneWallAged_S.tscn" id="26"]
+[ext_resource type="PackedScene" uid="uid://dckb21b62a46w" path="res://Scenes/StoneWallCorner_N.tscn" id="27"]
+[ext_resource type="PackedScene" uid="uid://j16kqxin70ah" path="res://Scenes/StoneWallBrokenLerf_S.tscn" id="28"]
 [ext_resource type="PackedScene" uid="uid://b3yog1mx0wpvt" path="res://Scenes/StoneWallColumnIn_E.tscn" id="29"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallAgedRight_W.tscn" id="30"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallBrokenLert_N.tscn" id="31"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneWallCorner_W.tscn" id="32"]
-[ext_resource type="PackedScene" path="res://Scenes/StoneColumnWood_E.tscn" id="33"]
+[ext_resource type="PackedScene" uid="uid://cr0iiswnkes16" path="res://Scenes/StoneWallAgedRight_W.tscn" id="30"]
+[ext_resource type="PackedScene" uid="uid://qgev8ap4bmm6" path="res://Scenes/StoneWallBrokenLert_N.tscn" id="31"]
+[ext_resource type="PackedScene" uid="uid://c1af68nn5k3lc" path="res://Scenes/StoneWallCorner_W.tscn" id="32"]
+[ext_resource type="PackedScene" uid="uid://xo7j7gyfnkes" path="res://Scenes/StoneColumnWood_E.tscn" id="33"]
 [ext_resource type="TileSet" uid="uid://v6dmyylw74xb" path="res://TileSets/.tres" id="34"]
 [ext_resource type="PackedScene" uid="uid://bg8f6lya222wj" path="res://Scenes/Objects/Timer.tscn" id="36"]
 [ext_resource type="PackedScene" uid="uid://b5saws1kdm4ac" path="res://Scenes/Objects/EnemyCounter.tscn" id="37"]
-[ext_resource type="PackedScene" path="res://Scenes/Game/PauseMenu.tscn" id="38"]
+[ext_resource type="PackedScene" uid="uid://c1xojs4xhcyt" path="res://Scenes/Game/PauseMenu.tscn" id="38"]
 [ext_resource type="PackedScene" uid="uid://bc6gu6agt31vk" path="res://Scenes/Objects/Radar.tscn" id="39"]
 
 [node name="InGame" type="Node2D" groups=["Game"]]
@@ -1545,8 +1545,10 @@ y_sort_enabled = true
 position = Vector2(-1432, 3264)
 
 [node name="Entities" type="Node2D" parent="YSort" groups=["Entities"]]
+y_sort_enabled = true
 
 [node name="Player" parent="YSort/Entities" instance=ExtResource("20")]
+y_sort_enabled = true
 position = Vector2(0, 2412)
 
 [node name="Camera2D" type="Camera2D" parent="YSort/Entities/Player"]
@@ -1587,9 +1589,5 @@ scale = Vector2(0.75, 0.75)
 
 [node name="PauseMenu" parent="HUD" instance=ExtResource("38")]
 visible = false
-layout_mode = 3
-anchors_preset = 15
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="ItemList" type="ItemList" parent="HUD"]

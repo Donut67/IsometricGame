@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://b10f80qc5310m"]
 
-[ext_resource path="res://Isometric/chestOpen_E.png" type="Texture" id=1]
+[sub_resource type="Resource" id="Resource_muahk"]
+metadata/__load_path__ = "res://Isometric/chestOpen_E.png"
 
 [node name="ChestOpen_E" type="StaticBody2D"]
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 11.3137, -186.323 )
-texture = ExtResource( 1 )
+position = Vector2(11.3137, -186.323)
+texture = SubResource("Resource_muahk")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PoolVector2Array( -26.8885, 11.032, -0.371979, 24.467, 48.4184, -0.635277, 23.3161, -18.313 )
+polygon = PackedVector2Array(-26.8885, 11.032, -0.371979, 24.467, 48.4184, -0.635277, 23.3161, -18.313)

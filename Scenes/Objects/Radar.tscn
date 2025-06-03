@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bc6gu6agt31vk"]
 
-[ext_resource type="Script" path="res://Scripts/Radar.gd" id="1"]
+[ext_resource type="Script" uid="uid://b3o7i2a2stjnr" path="res://Scripts/Radar.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b6ee27ix8ehyy" path="res://Character/RadarPart.png" id="2"]
 
 [node name="Radar" type="Control" groups=["Radar"]]
