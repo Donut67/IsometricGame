@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bk7aolti4ukoj"]
 
-[ext_resource type="Texture2D" uid="uid://b4p01dgylefeb" path="res://Character/Particle.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://b4p01dgylefeb" path="res://Assets/Character/Particle.png" id="1"]
 
 [sub_resource type="Curve" id="1"]
 _limits = [-360.0, 360.0, 0.0, 1.0]

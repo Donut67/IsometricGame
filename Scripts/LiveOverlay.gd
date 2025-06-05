@@ -1,4 +1,4 @@
-extends Node2D
+extends HBoxContainer
 
 var heart = preload("res://Scenes/Objects/Heart.tscn")
 @onready var max_lives = get_parent().lives
@@ -8,7 +8,6 @@ func _ready():
 	lives = max_lives
 	for i in range(max_lives):
 		var scene = heart.instantiate()
-		scene.set_position(Vector2(i + i * 25, 0))
 		call_deferred("add_child", scene)
 
 

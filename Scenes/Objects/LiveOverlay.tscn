@@ -2,5 +2,12 @@
 
 [ext_resource type="Script" uid="uid://joldqlsawuxn" path="res://Scripts/LiveOverlay.gd" id="1"]
 
-[node name="LiveOverlay" type="Node2D"]
+[node name="LiveOverlay" type="HBoxContainer"]
+z_index = 2
+y_sort_enabled = true
+custom_minimum_size = Vector2(0, 5)
+offset_right = 17.0
+offset_bottom = 5.0
+theme_override_constants/separation = 0
+alignment = 1
 script = ExtResource("1")

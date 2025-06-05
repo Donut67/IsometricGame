@@ -1,8 +1,14 @@
 [gd_scene load_steps=3 format=3 uid="uid://bg1bv8i6h57ap"]
 
 [ext_resource type="Script" uid="uid://3o7hcy540yeu" path="res://Scripts/Heart.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://cqq6ax6agk15a" path="res://Character/Heart/Full.png" id="2"]
 
-[node name="Heart" type="Sprite2D"]
-texture = ExtResource("2")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb1v3"]
+border_width_left = 4
+border_color = Color(1, 0.215686, 0, 1)
+
+[node name="Heart" type="Panel"]
+custom_minimum_size = Vector2(5, 4)
+offset_right = 5.0
+offset_bottom = 4.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_sb1v3")
 script = ExtResource("1")

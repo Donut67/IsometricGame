@@ -1,6 +1,6 @@
 extends Control
 
-func _process(delta):
+func _process(_delta):
 	var mins = int($Timer.get_time_left() / 60)
 	var secs = int($Timer.get_time_left() - mins * 60)
 	mins = str(mins) if mins > 9 else "0" + str(mins)

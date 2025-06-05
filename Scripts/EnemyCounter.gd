@@ -1,7 +1,7 @@
 extends Control
 
 
-func _process(delta):
+func _process(_delta):
 	var enemies = get_tree().get_nodes_in_group("Game")[0].enemies_remain
 	$Enemies.text = "ENEMIES " + str(enemies)
 	$Added.modulate.a = $TimeAdd.get_time_left()

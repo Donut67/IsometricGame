@@ -42,7 +42,7 @@ func attack():
 func jump(pos):
 	state = "Jumping"
 	var dist = get_position().distance_to(pos)
-	var aux_speed = jump_speed if dist > 150 else dist - 40
+	var aux_speed = jump_speed if dist > 15 else dist - 4.0
 	vel = pos - get_position()
 	vel = vel.normalized() * aux_speed
 	$JumpDuration.start()
@@ -84,5 +84,3 @@ func _on_AttackArea_body_entered(body):
 	if body.is_in_group("arrow"): 
 		take_damage(body.damage)
 		body.queue_free()
-
-

@@ -1,22 +1,22 @@
 [gd_scene load_steps=20 format=3 uid="uid://bsg14460tvcms"]
 
-[ext_resource type="Texture2D" uid="uid://bhd4himiu5rqu" path="res://Character/Slime/Idle/3.png" id="1"]
-[ext_resource type="Texture2D" uid="uid://c756o11olbj3t" path="res://Character/Slime/Idle/2.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://bfy7j2665ssw0" path="res://Character/Slime/Idle/4.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://giolt0shnnnk" path="res://Character/Slime/Idle/1.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://bhd4himiu5rqu" path="res://Assets/Character/Slime/Idle/3.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://c756o11olbj3t" path="res://Assets/Character/Slime/Idle/2.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bfy7j2665ssw0" path="res://Assets/Character/Slime/Idle/4.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://giolt0shnnnk" path="res://Assets/Character/Slime/Idle/1.png" id="4"]
 [ext_resource type="Script" uid="uid://dcnj1lvw2ny8d" path="res://Scripts/Slime.gd" id="5"]
-[ext_resource type="Texture2D" uid="uid://dnm31kc6lg3d6" path="res://Character/Slime/Jump/5.png" id="6"]
-[ext_resource type="Texture2D" uid="uid://bicuctw22xapq" path="res://Character/Slime/Jump/6.png" id="7"]
-[ext_resource type="Texture2D" uid="uid://bg6syjyofxfcr" path="res://Character/Slime/Jump/7.png" id="8"]
-[ext_resource type="Texture2D" uid="uid://pga2dxo16bdk" path="res://Character/Slime/Jump/10.png" id="9"]
+[ext_resource type="Texture2D" uid="uid://dnm31kc6lg3d6" path="res://Assets/Character/Slime/Jump/5.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://bicuctw22xapq" path="res://Assets/Character/Slime/Jump/6.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://bg6syjyofxfcr" path="res://Assets/Character/Slime/Jump/7.png" id="8"]
+[ext_resource type="Texture2D" uid="uid://pga2dxo16bdk" path="res://Assets/Character/Slime/Jump/10.png" id="9"]
 [ext_resource type="Script" uid="uid://0h3lo5pno82p" path="res://Scripts/PersueArea.gd" id="10"]
-[ext_resource type="Texture2D" uid="uid://c61enlpqojvdo" path="res://Character/Slime/Jump/9.png" id="11"]
+[ext_resource type="Texture2D" uid="uid://c61enlpqojvdo" path="res://Assets/Character/Slime/Jump/9.png" id="11"]
 [ext_resource type="Script" uid="uid://bk7m2tp2cegjo" path="res://Scripts/HitBoxArea.gd" id="12"]
-[ext_resource type="Texture2D" uid="uid://dlfk4awnfy13q" path="res://Character/Slime/Attack/2.png" id="13"]
-[ext_resource type="Texture2D" uid="uid://bxw3j17c67hg2" path="res://Character/Slime/Jump/4.png" id="14"]
-[ext_resource type="Texture2D" uid="uid://0dlrguurph6t" path="res://Character/Slime/Jump/8.png" id="15"]
-[ext_resource type="Texture2D" uid="uid://tcp354kakvjd" path="res://Character/Slime/Attack/1.png" id="16"]
-[ext_resource type="Texture2D" uid="uid://cs1pkawqs6772" path="res://Character/Slime/Attack/3.png" id="17"]
+[ext_resource type="Texture2D" uid="uid://dlfk4awnfy13q" path="res://Assets/Character/Slime/Attack/2.png" id="13"]
+[ext_resource type="Texture2D" uid="uid://bxw3j17c67hg2" path="res://Assets/Character/Slime/Jump/4.png" id="14"]
+[ext_resource type="Texture2D" uid="uid://0dlrguurph6t" path="res://Assets/Character/Slime/Jump/8.png" id="15"]
+[ext_resource type="Texture2D" uid="uid://tcp354kakvjd" path="res://Assets/Character/Slime/Attack/1.png" id="16"]
+[ext_resource type="Texture2D" uid="uid://cs1pkawqs6772" path="res://Assets/Character/Slime/Attack/3.png" id="17"]
 [ext_resource type="PackedScene" uid="uid://bqukwid2vwdwr" path="res://Scenes/Objects/LiveOverlay.tscn" id="18"]
 
 [sub_resource type="SpriteFrames" id="1"]
@@ -89,36 +89,40 @@ animations = [{
 }]
 
 [node name="Slime" type="CharacterBody2D" groups=["enemy"]]
+y_sort_enabled = true
 script = ExtResource("5")
 damage = 1
-jump_speed = 150
+jump_speed = 30
 
 [node name="AnimatedSprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -40)
-scale = Vector2(0.75, 0.75)
+position = Vector2(0, -14)
+scale = Vector2(0.25, 0.25)
 sprite_frames = SubResource("1")
 animation = &"Idle"
 frame = 1
 
 [node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(-40, 0, -32, 8, 0, 16, 32, 8, 40, 0, 32, -32, 0, -40, -32, -32)
+scale = Vector2(0.25, 0.25)
+polygon = PackedVector2Array(-60, -3, -45, 12, 0, 16, 45, 12, 60, -3, 55, -48, 35, -68, 0, -76, -35, -68, -55, -48)
+
+[node name="LiveOverlay" parent="." instance=ExtResource("18")]
+offset_left = -9.0
+offset_top = -27.0
+offset_right = 8.0
+offset_bottom = -22.0
 
 [node name="HitBoxArea" type="Area2D" parent="."]
 script = ExtResource("12")
 
 [node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="HitBoxArea"]
-scale = Vector2(3, 3)
 polygon = PackedVector2Array(-40, 0, -32, 8, 0, 13.3333, 32, 8, 40, 0, 32, -8, 0, -13.3333, -32, -8)
 
 [node name="PersueArea" type="Area2D" parent="."]
 script = ExtResource("10")
 
 [node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="PersueArea"]
-scale = Vector2(30, 30)
+scale = Vector2(5, 5)
 polygon = PackedVector2Array(-36.2667, 0, -34.6667, 4.26667, -32, 8, -25.6, 10.6667, -19.2, 12.8, -10.6667, 14.1333, 0, 14.9333, 10.6667, 14.1333, 19.2, 12.8, 25.6, 10.6667, 32, 8, 34.6667, 4.26667, 36.2667, 0, 34.6667, -4.26667, 32, -8, 25.6, -10.6667, 19.2, -12.8, 10.6667, -14.1333, 0, -14.9333, -10.6667, -14.1333, -19.2, -12.8, -25.6, -10.6667, -32, -8, -34.6667, -4.26667)
-
-[node name="LiveOverlay" parent="." instance=ExtResource("18")]
-position = Vector2(56, -64)
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 
