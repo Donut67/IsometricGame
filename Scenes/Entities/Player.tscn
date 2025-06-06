@@ -508,7 +508,7 @@ blend_point_3/pos = Vector2(-1, 0)
 blend_point_4/node = SubResource("AnimationNodeAnimation_fwc5c")
 blend_point_4/pos = Vector2(1, 0)
 blend_point_5/node = SubResource("AnimationNodeAnimation_co6ug")
-blend_point_5/pos = Vector2(0, -0.9)
+blend_point_5/pos = Vector2(0, -1)
 blend_point_6/node = SubResource("AnimationNodeAnimation_gx58k")
 blend_point_6/pos = Vector2(-0.6, -0.6)
 blend_point_7/node = SubResource("AnimationNodeAnimation_s0y7b")
@@ -534,10 +534,10 @@ animation = &"idle_up_right"
 animation = &"idle_up_left"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xiryl"]
-animation = &"walk_down_left"
+animation = &"idle_down_left"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l5c80"]
-animation = &"walk_down_right"
+animation = &"idle_down_right"
 
 [sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_7xe7r"]
 blend_point_0/node = SubResource("AnimationNodeAnimation_nus8f")
@@ -645,21 +645,16 @@ libraries = {
 tree_root = SubResource("AnimationNodeStateMachine_5hbjb")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Attack/blend_position = Vector2(0, 0)
-parameters/Idle/blend_position = Vector2(0, 0)
+parameters/Idle/blend_position = Vector2(0.602826, -0.571429)
 parameters/Walk/blend_position = Vector2(0, 0)
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-position = Vector2(-1, -4)
-scale = Vector2(0.4, 0.4)
-polygon = PackedVector2Array(-10, 7.5, -7.5, 10, 10, 10, 12.5, 7.5, 10, 5, -7.5, 5)
-
-[node name="ArrowSpawn" type="Node2D" parent="."]
-position = Vector2(-2.38419e-07, -3)
-scale = Vector2(1.75, 1.75)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, -0.5)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_5f5w1")
+
+[node name="ArrowSpawn" type="Node2D" parent="."]
+position = Vector2(-2.38419e-07, -3)
+scale = Vector2(1.75, 1.75)
 
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]

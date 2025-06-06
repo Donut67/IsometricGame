@@ -11,7 +11,7 @@ var player
 var current_index = 0
 
 const arrow_texture = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/8_Direction.png")
-const SLIME = preload("res://Scenes/Objects/Slime.tscn")
+const SLIME = preload("res://Scenes/Entities/Slime.tscn")
 
 
 func _ready():
@@ -62,7 +62,7 @@ func choose_dir(angle, intersection):
 	var indicator
 	
 	if current_index >= active_indicators.get_child_count():
-		indicator = create_indicator(intersection)
+		indicator = create_indicator()
 	else:
 		indicator = active_indicators.get_child(current_index)
 	
@@ -75,7 +75,7 @@ func choose_dir(angle, intersection):
 	current_index += 1
 
 
-func create_indicator(intersection):
+func create_indicator():
 	var new_indicator := Sprite2D.new()
 	
 	new_indicator.texture = arrow_texture
@@ -89,7 +89,7 @@ func create_indicator(intersection):
 func _spawn_enemies():
 	var _spawnpoints = get_tree().get_nodes_in_group("SpawnPoints")[0]
 	var n = _spawnpoints.get_child_count()
-	for i in range(initial_enemies + int(_round / 3) if initial_enemies + int(_round / 3) < 15 else 15):
+	for i in range(initial_enemies + int(_round / 3.0) if initial_enemies + int(_round / 3.0) < 15 else 15):
 		rng.randomize()
 		var s = rng.randi_range(0, n-1)
 		var scene = SLIME.instantiate()

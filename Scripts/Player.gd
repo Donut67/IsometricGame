@@ -8,7 +8,7 @@ var attacked = false
 var shot = false
 var angle = 26.565051177078
 
-var ARROW = preload("res://Scenes/Objects/Arrow.tscn")
+var ARROW = preload("res://Scenes/Entities/Arrow.tscn")
 
 @export var vel = 360
 @export var animation_tree : AnimationTree
@@ -27,7 +27,22 @@ func _physics_process(delta):
 		if Input.is_action_pressed("LEFT"): dir.x -= 1
 		if Input.is_action_pressed("RIGHT"): dir.x += 1
 	
-	if Input.is_action_just_pressed("ATTACK") and not _attack: attack()
+	if Input.is_action_just_pressed("ATTACK") and not _attack: 
+		attack()
+		
+		var angle_degrees = atan2(
+			get_global_mouse_position().y - global_position.y, 
+			get_global_mouse_position().x - global_position.x) * 180 / PI
+		
+		angle_degrees = fposmod(angle_degrees + 90.0, 360.0)  # Shift so 0° = down
+		var shifted = fposmod(angle_degrees + 22.5, 360.0)  # Shift so 0° maps to sector 0
+		var frame = int(floor(shifted / 45.0)) % 8
+		var directions = [
+			Vector2(0, -1), Vector2(1, -1), Vector2( 1, 0), Vector2( 1,  1),
+			Vector2(0,  1), Vector2(-1, 1), Vector2(-1, 0), Vector2(-1, -1)] 
+		
+		previous_dir = directions[frame]
+	
 	if _attack and $AttackTimer.get_time_left() <= 0.1 and not attacked: 
 		var scene = ARROW.instantiate()
 		scene.set_global_position(position - $ArrowSpawn.get_position())
@@ -69,8 +84,9 @@ func move(dir, delta):
 		var vec = Vector2(vel * cos(PI/180*anlge_degrees), vel * sin(PI/180*anlge_degrees))
 		vec = vec * delta
 		move_and_collide(vec)
+	else:
+		move_and_collide(Vector2.ZERO * delta)
 	
-	move_and_slide()
 	update_animation_parameters()
 	if dir.x != 0 or dir.y != 0: previous_dir = dir
 

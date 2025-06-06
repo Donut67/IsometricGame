@@ -1,0 +1,68 @@
+[gd_scene load_steps=3 format=3 uid="uid://wxmno27u1ma6"]
+
+[ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="1_61twt"]
+[ext_resource type="Script" uid="uid://dc0sgr56goj1v" path="res://Scripts/map_layers.gd" id="1_jqda3"]
+
+[node name="MapLayers" type="Node2D"]
+script = ExtResource("1_jqda3")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+autostart = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+
+[node name="Shadows" type="TileMapLayer" parent="."]
+position = Vector2(-8, -4)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer1" type="TileMapLayer" parent="."]
+position = Vector2(-8, -4)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer2" type="TileMapLayer" parent="."]
+position = Vector2(-8, -13)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer3" type="TileMapLayer" parent="."]
+position = Vector2(-8, -22)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer4" type="TileMapLayer" parent="."]
+position = Vector2(-8, -31)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer5" type="TileMapLayer" parent="."]
+position = Vector2(-8, -40)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer6" type="TileMapLayer" parent="."]
+position = Vector2(-8, -49)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer7" type="TileMapLayer" parent="."]
+position = Vector2(-8, -58)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer8" type="TileMapLayer" parent="."]
+position = Vector2(-8, -67)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer9" type="TileMapLayer" parent="."]
+position = Vector2(-8, -76)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer10" type="TileMapLayer" parent="."]
+position = Vector2(-8, -85)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer11" type="TileMapLayer" parent="."]
+position = Vector2(-8, -94)
+tile_set = ExtResource("1_61twt")
+
+[node name="TileMapLayer12" type="TileMapLayer" parent="."]
+position = Vector2(-8, -103)
+tile_set = ExtResource("1_61twt")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

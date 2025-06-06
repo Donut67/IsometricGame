@@ -1,17 +1,17 @@
 [gd_resource type="TileSet" load_steps=7 format=3 uid="uid://ccyqrtd6lolle"]
 
-[ext_resource type="Texture2D" uid="uid://ccsst0a88qgn5" path="res://Assets/isometric boxes - free pixel assets/box pointer.png" id="1_uach5"]
-[ext_resource type="Texture2D" uid="uid://c0xlamws667dr" path="res://Assets/isometric boxes - free pixel assets/boxes_SpriteSheet.png" id="2_ni5bm"]
-[ext_resource type="Texture2D" uid="uid://l3bvq74yeq7j" path="res://Assets/isometric boxes - free pixel assets/shadow.png" id="3_6vbp7"]
+[ext_resource type="Texture2D" uid="uid://ccsst0a88qgn5" path="res://Assets/isometric boxes - free pixel assets/box pointer.png" id="1_xn5a8"]
+[ext_resource type="Texture2D" uid="uid://c0xlamws667dr" path="res://Assets/isometric boxes - free pixel assets/boxes_SpriteSheet.png" id="2_so33a"]
+[ext_resource type="Texture2D" uid="uid://l3bvq74yeq7j" path="res://Assets/isometric boxes - free pixel assets/shadow.png" id="3_edfs1"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_h86ut"]
-texture = ExtResource("1_uach5")
+texture = ExtResource("1_xn5a8")
 texture_region_size = Vector2i(20, 18)
 0:0/0 = 0
 1:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lehh8"]
-texture = ExtResource("2_ni5bm")
+texture = ExtResource("2_so33a")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 4)
@@ -112,11 +112,13 @@ texture_region_size = Vector2i(18, 18)
 4:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -4, -8, 0, 0, 4, 8, 0)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y1pbf"]
-texture = ExtResource("3_6vbp7")
+texture = ExtResource("3_edfs1")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 4)
 0:0/0/y_sort_origin = -12
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(0, 4)
 
 [resource]
 tile_shape = 1
