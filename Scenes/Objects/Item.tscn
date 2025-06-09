@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://dm7nwqknd5n7c"]
+
+[ext_resource type="Script" uid="uid://cc7lav4iodgbk" path="res://Scripts/item.gd" id="1_r82ly"]
+[ext_resource type="TileSet" uid="uid://dp0ttdaxggma1" path="res://TileSets/items.tres" id="2_jqgq0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kugfl"]
+radius = 6.0
+
+[node name="Item" type="Node2D" groups=["Item"]]
+script = ExtResource("1_r82ly")
+bounciness = 0.1
+friction = 10.0
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+position = Vector2(-8, -4)
+tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
+tile_set = ExtResource("2_jqgq0")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -1)
+shape = SubResource("CircleShape2D_kugfl")

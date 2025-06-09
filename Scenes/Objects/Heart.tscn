@@ -3,12 +3,11 @@
 [ext_resource type="Script" uid="uid://3o7hcy540yeu" path="res://Scripts/Heart.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb1v3"]
-border_width_left = 4
 border_color = Color(1, 0.215686, 0, 1)
 
 [node name="Heart" type="Panel"]
-custom_minimum_size = Vector2(5, 4)
-offset_right = 5.0
-offset_bottom = 4.0
+custom_minimum_size = Vector2(9, 2)
+offset_right = 10.0
+offset_bottom = 2.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_sb1v3")
 script = ExtResource("1")

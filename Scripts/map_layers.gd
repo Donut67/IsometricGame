@@ -17,6 +17,8 @@ extends Node2D
 
 var heightmap: Dictionary = {}
 var box_entities = []
+var updates: Dictionary = {"deleted": []}
+var box_data: Dictionary = {}  # Key: Vector3i, Value: Dictionary with data, e.g. {"item": item}
 
 const SHADOW_HALF: Vector2i = Vector2i(0, 0)
 const SHADOW_FULL: Vector2i = Vector2i(1, 0)
@@ -30,39 +32,41 @@ const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
 func _ready() -> void:
 	#generate_piles()
 	#place_shadows()
-	place_random_box(Vector3i(0, 0, 0))
+	#place_random_box(Vector3i(0, 0, 0))
+	pass
 
 func _process(delta: float) -> void:
-	for i in box_entities:
-		var pos = i.grid_position
+	var to_process = updates["deleted"]
+	updates["deleted"] = []
+	
+	for update in to_process:
+		var pos = Vector2i(update.x, update.y)
+		var height = update.z + 1
+		var box = layers[height].get_cell_atlas_coords(pos)
+		var top = update + Vector3i(0, 0, 1)
+		
+		if box != Vector2i(-1, -1):
+			delete_box(top, true, false)
+			place_box_entity(top, box, box_data[top]["item"])
+			box_data.erase(top)
+	
+	for box in box_entities:
+		var pos = Vector3i((box.real_position).floor())
 		var map_pos = Vector2i(pos.x, pos.y)
 		
 		if pos.z >= layers.size(): continue
 		
 		if pos.z < 0:
-			place_box(Vector3i(pos.x, pos.y, 0), i.atlas_coords)
-			i.queue_free()
-			box_entities.erase(i)
+			var new_pos = pos * Vector3i(1, 1, 0)
+			place_box(new_pos, box.atlas_coords, box.item)
+			box.delete_box()
+			box_entities.erase(box)
 		
-		if layers[pos.z].get_cell_atlas_coords(Vector2i(pos.x, pos.y)) != Vector2i(-1, -1):
-			place_box(pos + Vector3i(0, 0, 1), i.atlas_coords)
-			i.queue_free()
-			box_entities.erase(i)
-
-func _input(event: InputEvent) -> void:
-	pass
-	if event.is_action_released("ATTACK"):
-		var current_layer = max_height - 1
-		var map_position = layers[current_layer].local_to_map(get_local_mouse_position())
-		
-		print(current_layer, ", ", map_position)
-		
-		while current_layer >= 0 and layers[current_layer].get_cell_atlas_coords(map_position) == Vector2i(-1, -1):
-			current_layer -= 1
-			map_position = layers[current_layer].local_to_map(get_local_mouse_position())
-		
-		var final_position = Vector3i(map_position.x, map_position.y, current_layer)
-		if current_layer >= 0: delete_box(final_position)
+		if layers[pos.z].get_cell_source_id(map_pos) != -1:
+			var new_pos = pos + Vector3i(0, 0, 1)
+			place_box(new_pos, box.atlas_coords, box.item)
+			box.delete_box()
+			box_entities.erase(box)
 
 
 func generate_piles():
@@ -87,7 +91,7 @@ func generate_piles():
 					if dist <= radius and chance < 0.85:
 						var pos = Vector3i(center.x + dx, center.y + dy, dz)
 						
-						place_box(pos, full_boxes_atlas_coordinates.pick_random(), false)
+						place_box(pos, full_boxes_atlas_coordinates.pick_random(), null, false)
 						
 						if pos.z == 0: used_positions[pos] = true
 
@@ -97,10 +101,10 @@ func generate_position():
 	
 	return Vector2i(x, y)
 
-func place_random_box(global_pos: Vector3i, reload_shadows: bool = true):
-	place_box(global_pos, full_boxes_atlas_coordinates.pick_random(), reload_shadows)
+func place_random_box(global_pos: Vector3i, item: Object, reload_shadows: bool = true):
+	place_box(global_pos, full_boxes_atlas_coordinates.pick_random(), item, reload_shadows)
 
-func place_box(global_pos: Vector3i, coords: Vector2i, reload_shadows: bool = true):
+func place_box(global_pos: Vector3i, coords: Vector2i, item: Object, reload_shadows: bool = true):
 	var pos = Vector2i(global_pos.x, global_pos.y)
 	var fall_z = global_pos.z
 	
@@ -110,15 +114,19 @@ func place_box(global_pos: Vector3i, coords: Vector2i, reload_shadows: bool = tr
 	layers[fall_z].set_cell(pos, 1, coords, 0)
 	
 	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
+	box_data[global_pos] = {"item": item}
+	
 	if reload_shadows: place_shadows()
 
-func place_random_box_entity(global_pos: Vector3i):
-	place_box_entity(global_pos, full_boxes_atlas_coordinates.pick_random())
+func place_random_box_entity(global_pos: Vector3i, item: Object):
+	place_box_entity(global_pos, full_boxes_atlas_coordinates.pick_random(), item)
 
-func place_box_entity(global_pos: Vector3i, atlas_coords: Vector2i):
+func place_box_entity(global_pos: Vector3i, atlas_coords: Vector2i, item: Object):
 	var box = box_entity_instance.instantiate()
+	box.item = item
 	add_child(box)
 	box.set_grid_position(global_pos, atlas_coords)
+	box_data[global_pos] = {"item": item}
 	
 	box_entities.append(box)
 
@@ -133,20 +141,33 @@ func place_shadows():
 			if shadow_layer.get_cell_atlas_coords(shadow_pos) == SHADOW_FULL: continue
 			shadow_layer.set_cell(shadow_pos, 2, SHADOW_HALF if i == height else SHADOW_FULL, 0)
 
-func delete_box(pos: Vector3i, reload_shadows: bool = true):
+func delete_box(pos: Vector3i, update: bool = true, cascade: bool = true):
 	var min_layer = pos.z
 	var map_pos = Vector2i(pos.x, pos.y)
 	
 	layers[min_layer].set_cell(map_pos)
-	for layer in range(min_layer + 1, max_height):
-		var current_layer = layer - 1
-		var atlas_coords = layers[layer].get_cell_atlas_coords(map_pos)
+	if cascade:
+		for layer in range(min_layer + 1, max_height):
+			var current_layer = layer - 1
+			var atlas_coords = layers[layer].get_cell_atlas_coords(map_pos)
+			
+			layers[current_layer].set_cell(map_pos, 1, atlas_coords, 0)
 		
-		layers[current_layer].set_cell(map_pos, 1, atlas_coords, 0)
-	
 	heightmap[map_pos] = max(0, heightmap[map_pos] - 1)
-	if reload_shadows: place_shadows()
+	
+	if update: 
+		place_shadows()
+		updates["deleted"].append(pos)
 
+var num_boxes = 5
+const item_instance = preload("res://Scenes/Objects/Item.tscn")
 
 func _on_timer_timeout() -> void:
-	place_random_box_entity(Vector3i(0, 0, 31))
+	num_boxes -= 1
+	
+	var item = null
+	if num_boxes == 4: 
+		item = item_instance.instantiate()
+	
+	place_random_box_entity(Vector3i(0, 0, 31), item)
+	if num_boxes == 0: $Timer.stop()

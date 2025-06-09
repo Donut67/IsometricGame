@@ -1,8 +1,8 @@
 [gd_scene load_steps=59 format=3 uid="uid://b1jubpkv3ltgc"]
 
 [ext_resource type="Texture2D" uid="uid://dd02idyy3y74x" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png" id="2_5f5w1"]
+[ext_resource type="PackedScene" uid="uid://bg1bv8i6h57ap" path="res://Scenes/Objects/Heart.tscn" id="3_agccv"]
 [ext_resource type="Script" uid="uid://c5l6r2vb00d7p" path="res://Scripts/Player.gd" id="10"]
-[ext_resource type="PackedScene" uid="uid://bqukwid2vwdwr" path="res://Scenes/Objects/LiveOverlay.tscn" id="11"]
 
 [sub_resource type="Animation" id="Animation_1hsdx"]
 length = 0.001
@@ -610,10 +610,11 @@ states/Walk/node = SubResource("AnimationNodeBlendSpace2D_asuhv")
 states/Walk/position = Vector2(357, 100)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5f5w1"]
-radius = 1.5
-height = 9.0
+radius = 2.5
+height = 7.0
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_tree") groups=["player"]]
+y_sort_enabled = true
 script = ExtResource("10")
 vel = 54
 animation_tree = NodePath("AnimationTree")
@@ -621,16 +622,16 @@ animation_tree = NodePath("AnimationTree")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 y_sort_enabled = true
 texture_filter = 1
-position = Vector2(0, -14)
+position = Vector2(0, -13)
 texture = ExtResource("2_5f5w1")
 hframes = 8
 vframes = 11
 
-[node name="LiveOverlay" parent="." instance=ExtResource("11")]
-offset_left = -8.0
-offset_top = -24.0
-offset_right = -8.0
-offset_bottom = -19.0
+[node name="Heart" parent="." instance=ExtResource("3_agccv")]
+offset_left = -5.0
+offset_top = 2.0
+offset_right = 4.0
+offset_bottom = 4.0
 
 [node name="AttackTimer" type="Timer" parent="."]
 wait_time = 0.4
@@ -653,8 +654,35 @@ position = Vector2(-0.5, -0.5)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_5f5w1")
 
-[node name="ArrowSpawn" type="Node2D" parent="."]
-position = Vector2(-2.38419e-07, -3)
-scale = Vector2(1.75, 1.75)
+[node name="BoxPositions" type="Node2D" parent="."]
+
+[node name="Up" type="Node2D" parent="BoxPositions"]
+z_index = -1
+y_sort_enabled = true
+position = Vector2(-1, -6)
+
+[node name="UpRight" type="Node2D" parent="BoxPositions"]
+z_index = -1
+y_sort_enabled = true
+position = Vector2(5, -6)
+
+[node name="Right" type="Node2D" parent="BoxPositions"]
+position = Vector2(6, -4)
+
+[node name="DownRight" type="Node2D" parent="BoxPositions"]
+position = Vector2(5, -1)
+
+[node name="Down" type="Node2D" parent="BoxPositions"]
+
+[node name="DownLeft" type="Node2D" parent="BoxPositions"]
+position = Vector2(-6, -1)
+
+[node name="Left" type="Node2D" parent="BoxPositions"]
+position = Vector2(-7, -4)
+
+[node name="UpLeft" type="Node2D" parent="BoxPositions"]
+z_index = -1
+y_sort_enabled = true
+position = Vector2(-6, -6)
 
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]

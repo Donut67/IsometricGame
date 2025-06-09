@@ -7,12 +7,26 @@ var _attack = false
 var attacked = false
 var shot = false
 var angle = 26.565051177078
+var playback : AnimationNodeStateMachinePlayback
 
-var ARROW = preload("res://Scenes/Entities/Arrow.tscn")
+var holding_item: Node = null
+
+const ARROW = preload("res://Scenes/Entities/Arrow.tscn")
+const directions: Dictionary = {
+	Vector2( 0,  1): 0,
+	Vector2( 1,  1): 1,
+	Vector2( 1,  0): 2,
+	Vector2( 1, -1): 3,
+	Vector2( 0, -1): 4,
+	Vector2(-1, -1): 5,
+	Vector2(-1,  0): 6,
+	Vector2(-1,  1): 7
+}
+
+@onready var strenght = $Heart
 
 @export var vel = 360
 @export var animation_tree : AnimationTree
-var playback : AnimationNodeStateMachinePlayback
 
 func _ready():
 	playback = animation_tree["parameters/playback"]
@@ -22,42 +36,19 @@ func _physics_process(delta):
 	var dir = Vector2.ZERO
 	
 	if not _attack:
-		if Input.is_action_pressed("UP"): dir.y -= 1
-		if Input.is_action_pressed("DOWN"): dir.y += 1
-		if Input.is_action_pressed("LEFT"): dir.x -= 1
-		if Input.is_action_pressed("RIGHT"): dir.x += 1
-	
-	if Input.is_action_just_pressed("ATTACK") and not _attack: 
-		attack()
-		
-		var angle_degrees = atan2(
-			get_global_mouse_position().y - global_position.y, 
-			get_global_mouse_position().x - global_position.x) * 180 / PI
-		
-		angle_degrees = fposmod(angle_degrees + 90.0, 360.0)  # Shift so 0° = down
-		var shifted = fposmod(angle_degrees + 22.5, 360.0)  # Shift so 0° maps to sector 0
-		var frame = int(floor(shifted / 45.0)) % 8
-		var directions = [
-			Vector2(0, -1), Vector2(1, -1), Vector2( 1, 0), Vector2( 1,  1),
-			Vector2(0,  1), Vector2(-1, 1), Vector2(-1, 0), Vector2(-1, -1)] 
-		
-		previous_dir = directions[frame]
-	
-	if _attack and $AttackTimer.get_time_left() <= 0.1 and not attacked: 
-		var scene = ARROW.instantiate()
-		scene.set_global_position(position - $ArrowSpawn.get_position())
-		get_tree().get_nodes_in_group("Arrows")[0].add_child(scene)
-		attacked = true
+		dir.x = Input.get_axis("LEFT", "RIGHT")
+		dir.y = Input.get_axis("UP", "DOWN")
 	
 	choose_anim(dir)
 	move(dir, delta)
 
+func set_holding_item(item: Node):
+	holding_item = item
+	add_child(item)
 
-func attack():
-	$AttackTimer.start()
-	_attack = true
-	previous_angle = rad_to_deg(global_position.angle_to_point(get_global_mouse_position()))
-
+func remove_holding_item():
+	holding_item.queue_free()
+	holding_item = null
 
 func choose_anim(dir):
 	if _attack: playback.travel("Attack")
@@ -94,9 +85,17 @@ func move(dir, delta):
 func update_animation_parameters():
 	if previous_dir == Vector2.ZERO: return
 	
-	animation_tree["parameters/Idle/blend_position"] = previous_dir * Vector2(1, -1)
-	animation_tree["parameters/Walk/blend_position"] = previous_dir * Vector2(1, -1)
-	animation_tree["parameters/Attack/blend_position"] = previous_dir * Vector2(1, -1)
+	var dir = previous_dir * Vector2(1, -1)
+	
+	animation_tree["parameters/Idle/blend_position"] = dir
+	animation_tree["parameters/Walk/blend_position"] = dir
+	animation_tree["parameters/Attack/blend_position"] = dir
+	
+	if holding_item:
+		var child = directions[dir]
+		
+		holding_item.position = $BoxPositions.get_child(child).position
+		holding_item.z_index = 0 if child > 1 and child < 7 else -1
 
 func take_damage(value):
 	lives -= value

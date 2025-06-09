@@ -1,0 +1,30 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dp0ttdaxggma1"]
+
+[ext_resource type="Texture2D" uid="uid://dlu5hgj5laykx" path="res://Assets/isometric boxes - free pixel assets/items.png" id="1_u32v6"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1pvky"]
+texture = ExtResource("1_u32v6")
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 1)
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(0, 1)
+2:0/0 = 0
+2:0/0/texture_origin = Vector2i(0, 1)
+3:0/0 = 0
+3:0/0/texture_origin = Vector2i(0, 1)
+4:0/0 = 0
+4:0/0/texture_origin = Vector2i(0, 1)
+5:0/0 = 0
+5:0/0/texture_origin = Vector2i(0, 1)
+6:0/0 = 0
+6:0/0/texture_origin = Vector2i(0, 1)
+0:1/0 = 0
+0:1/0/texture_origin = Vector2i(0, 1)
+1:1/0 = 0
+1:1/0/texture_origin = Vector2i(0, 1)
+
+[resource]
+tile_shape = 1
+tile_layout = 5
+tile_size = Vector2i(16, 8)
+sources/1 = SubResource("TileSetAtlasSource_1pvky")
