@@ -10,12 +10,26 @@ var throw_height: float = 0
 var charging_time: float = 0
 var is_thow_charging: bool = false
 var items_in_range: Array = []
+var closest_item: Node2D = null
 
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
+const item_instance = preload("res://Scenes/Objects/Item.tscn")
 
 func _process(delta: float) -> void:
 	mouse_area.global_position = get_global_mouse_position()
 	
+	var p_item_list = Global.intersect(items_in_range, player.items_in_range)
+	var item_list = []
+	for i in p_item_list: if is_instance_valid(i): item_list.append(i)
+	
+	if closest_item != null: closest_item.highlight(false)
+	item_list.erase(player.holding_item)
+	
+	if item_list.size() != 0:
+		closest_item = get_closest_item(get_global_mouse_position(), item_list)
+		
+		closest_item.highlight(true)
+	else: closest_item = null
 	
 	if is_thow_charging:
 		charging_time += delta
@@ -41,46 +55,67 @@ func _input(event: InputEvent) -> void:
 		var selected_tile_coords = world.layers[0].get_cell_atlas_coords(placement_position)
 		
 		if what_holding == null:
-			# If the player is empty handed
+			# If not holding anything
 			
 			if selected_tile_type == 1:
-				# Pickup Box
+				# and the selected tile is a box, pickup box
 				
 				var box_entity = box_entity_instance.instantiate()
 				player.set_holding_item(box_entity)
 				
-				box_entity.item = world.box_data[selected_tile]["item"]
+				if world.box_data.has(selected_tile): 
+					box_entity.item = world.box_data[selected_tile]["item"]
 				box_entity.set_grid_position(Vector3.ZERO, selected_tile_coords)
 				box_entity.apply_gravity = false
 				
 				world.delete_box(selected_tile, true, false)
 				world.box_data.erase(selected_tile)
-			elif items_in_range.size() > 0:
-				# If not holding anything and no box on selected tile and item in range, pickup item
+			elif closest_item != null:
+				# and no box on selected tile and item in range, pickup item
 				
-				var closest = get_closest_item(get_local_mouse_position())
-				closest.set_real_position(Vector3.ZERO)
-				closest.get_parent().remove_child(closest)
-				closest.apply_gravity = false
+				closest_item.set_real_position(Vector3.ZERO)
+				closest_item.get_parent().remove_child(closest_item)
+				closest_item.apply_gravity = false
 				
-				player.set_holding_item(closest)
+				player.set_holding_item(closest_item)
 		elif what_holding == "BoxEntity":
 			# If player is holding a BoxEntinty
 			
-			if selected_tile_type == -1:
-				# Drop Box
+			var holding_atlas_coords = player.holding_item.atlas_coords
+			
+			if closest_item != null and player.holding_item.item == null:
+				# and item in range drop box and add item to box if box is empty
 				
-				var holding_atlas_coords = player.holding_item.atlas_coords
+				closest_item.get_parent().remove_child(closest_item)
+				world.place_box(selected_tile, holding_atlas_coords, closest_item)
+				player.remove_holding_item()
+			elif selected_tile_type == -1:
+				# and no box on selected tile nor item in range, drop box
+				
 				var item = player.holding_item.item
-				
 				world.place_box(selected_tile, holding_atlas_coords, item)
 				player.remove_holding_item()
-			##
-			## If holding box and item in range drop box and add item to box if box is empty
-			##
-		##
-		## If holding item and item in range, fuse items and drop the fusion
-		##
+		elif what_holding == "Item" and closest_item != null:
+			# If holding item and item in range, fuse items and drop the fusion
+			var recipe = Global.find_recipe([player.holding_item.item_type, closest_item.item_type])
+			
+			if recipe.has("output"):
+				var item = item_instance.instantiate()
+				item.set_item_type(recipe["output"])
+				item.real_position = closest_item.real_position
+				add_child(item)
+				
+				# Throw item towards the player
+				var player_pos = Global.screen_to_grid_f(player.position, 0)
+				var dir_vector = (player_pos - Vector3(selected_tile)).normalized()
+				item.velocity = Vector3(-2.5, -2.5, 3.125) * dir_vector
+				
+				items_in_range.erase(closest_item)
+				player.items_in_range.erase(closest_item)
+				
+				closest_item.queue_free()
+				player.holding_item.queue_free()
+				player.holding_item = null
 	elif event.is_action_released("INTERACT"):
 		# If not holding anything and the selected tile is a box, take item from box
 		# If holding item and selected tile is box and empty, put item in box
@@ -102,12 +137,13 @@ func _input(event: InputEvent) -> void:
 			# Throw item towards the player
 			var player_pos = Global.screen_to_grid_f(player.position, 0)
 			var dir_vector = (player_pos - Vector3(selected_tile)).normalized()
-			item.velocity = Vector3(2.5, 0, 5) * dir_vector
-		elif what_holding == "Item" and not world.box_data.has(selected_tile):
+			item.velocity = Vector3(5, 5, 7.5) * dir_vector
+		elif what_holding == "Item" and not world.box_data.has(selected_tile) and selected_tile_type != -1:
 			# Put the holding item in the selected box
 			
 			player.holding_item.get_parent().remove_child(player.holding_item)
 			world.box_data[selected_tile] = {"item": player.holding_item}
+			player.holding_item = null
 	elif event.is_action_pressed("THROW"):
 		# Start throwing charge if player is holding something
 		
@@ -138,6 +174,7 @@ func _input(event: InputEvent) -> void:
 		# Reset throwing variables
 		throw_height = 0
 		player.strenght.set_strenght(0)
+		player.holding_item = null
 		charging_time = 0
 		is_thow_charging = false
 
@@ -166,11 +203,13 @@ func get_adjacent_tile_in_mouse_direction() -> Vector3i:
 	target_pos.z = 0  # Only pick from bottom layer
 	return target_pos
 
-func get_closest_item(objective: Vector2) -> Node2D:
-	var closest = items_in_range[0]
+func get_closest_item(objective: Vector2, items_list: Array) -> Node2D:
+	if items_list.size() == 0: return null
+	
+	var closest = items_list[0]
 	var dist = abs(closest.position - objective)
 	
-	for item in items_in_range:
+	for item in items_list:
 		closest = closest if dist < abs(item.position - objective) else item
 	
 	return closest
@@ -182,3 +221,30 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 func _on_area_2d_area_exited(area: Area2D) -> void:
 	if items_in_range.has(area.owner):
 		items_in_range.erase(area.owner)
+
+# DEBUG purposes
+var solicitated_boxes = [
+	"metal_scrap", "metal_scrap", "metal_scrap", "metal_scrap", "metal_scrap", 
+	"carbon_dust", "carbon_dust", "carbon_dust", "carbon_dust", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", 
+	"plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk", "plastic_chunk"
+]
+
+func _ready() -> void:
+	solicitated_boxes.shuffle()
+
+func _on_timer_timeout() -> void:
+	var item_type = solicitated_boxes.pop_front()
+	var item = item_instance.instantiate()
+	item.set_item_type(item_type)
+	
+	world.place_random_box_entity(Vector3i(0, 0, 31), item)
+	
+	if solicitated_boxes.size() == 0: $Timer.stop()

@@ -1,0 +1,40 @@
+[gd_resource type="JSON" format=3 uid="uid://bc7epoxgm7dd3"]
+
+[resource]
+data = [{
+"input": ["metal_scrap", "metal_scrap"],
+"output": "metal_panel"
+}, {
+"input": ["metal_scrap", "carbon_dust"],
+"output": "reinforced_scrap"
+}, {
+"input": ["metal_panel", "reinforced_scrap"],
+"output": "raw_frame_part"
+}, {
+"input": ["plastic_chunk", "carbon_dust"],
+"output": "insulation_patch"
+}, {
+"input": ["insulation_patch", "plastic_chunk"],
+"output": "insulated_joint"
+}, {
+"input": ["plastic_chunk", "plastic_chunk"],
+"output": "plastic_shell"
+}, {
+"input": ["plastic_shell", "carbon_dust"],
+"output": "coated_wiring"
+}, {
+"input": ["coated_wiring", "carbon_dust"],
+"output": "basic_connector"
+}, {
+"input": ["basic_connector", "plastic_shell"],
+"output": "crude_circuit"
+}, {
+"input": ["raw_frame_part", "insulated_joint"],
+"output": "machine_frame_base"
+}, {
+"input": ["machine_frame_base", "metal_panel"],
+"output": "machine_frame_part"
+}, {
+"input": ["machine_frame_part", "crude_circuit"],
+"output": "smelter"
+}]

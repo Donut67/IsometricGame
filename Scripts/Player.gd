@@ -10,6 +10,7 @@ var angle = 26.565051177078
 var playback : AnimationNodeStateMachinePlayback
 
 var holding_item: Node = null
+var items_in_range: Array = []
 
 const ARROW = preload("res://Scenes/Entities/Arrow.tscn")
 const directions: Dictionary = {
@@ -91,17 +92,24 @@ func update_animation_parameters():
 	animation_tree["parameters/Walk/blend_position"] = dir
 	animation_tree["parameters/Attack/blend_position"] = dir
 	
-	if holding_item:
+	if holding_item != null:
 		var child = directions[dir]
 		
-		holding_item.position = $BoxPositions.get_child(child).position
+		holding_item.real_position = Global.screen_to_grid_f($BoxPositions.get_child(child).position, 0)
 		holding_item.z_index = 0 if child > 1 and child < 7 else -1
 
 func take_damage(value):
 	lives -= value
 	$LiveOverlay.update_lives()
 
-
 func _on_AttackTimer_timeout():
 	_attack = false
 	attacked = false
+
+func _on_area_2d_area_entered(area: Area2D) -> void:
+	if area.owner.is_in_group("Item"):
+		items_in_range.append(area.owner)
+
+func _on_area_2d_area_exited(area: Area2D) -> void:
+	if items_in_range.has(area.owner):
+		items_in_range.erase(area.owner)

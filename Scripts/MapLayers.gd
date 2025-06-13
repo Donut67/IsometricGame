@@ -29,12 +29,6 @@ const full_boxes_atlas_coordinates = [
 ]
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
 
-func _ready() -> void:
-	#generate_piles()
-	#place_shadows()
-	#place_random_box(Vector3i(0, 0, 0))
-	pass
-
 func _process(delta: float) -> void:
 	var to_process = updates["deleted"]
 	updates["deleted"] = []
@@ -42,6 +36,9 @@ func _process(delta: float) -> void:
 	for update in to_process:
 		var pos = Vector2i(update.x, update.y)
 		var height = update.z + 1
+		
+		if height == layers.size(): continue
+		
 		var box = layers[height].get_cell_atlas_coords(pos)
 		var top = update + Vector3i(0, 0, 1)
 		
@@ -50,56 +47,72 @@ func _process(delta: float) -> void:
 			place_box_entity(top, box, box_data[top]["item"])
 			box_data.erase(top)
 	
+	# Proces entities
 	for box in box_entities:
 		var pos = Vector3i((box.real_position).floor())
 		var map_pos = Vector2i(pos.x, pos.y)
 		
+		# If the box is ober the box height limit skip this box
 		if pos.z >= layers.size(): continue
 		
-		if pos.z < 0:
-			var new_pos = pos * Vector3i(1, 1, 0)
-			place_box(new_pos, box.atlas_coords, box.item)
-			box.delete_box()
-			box_entities.erase(box)
+		var new_position = pos
 		
-		if layers[pos.z].get_cell_source_id(map_pos) != -1:
-			var new_pos = pos + Vector3i(0, 0, 1)
-			place_box(new_pos, box.atlas_coords, box.item)
-			box.delete_box()
-			box_entities.erase(box)
-
-
-func generate_piles():
-	var used_positions = {}
-	
-	for i in range(pile_count):
-		var center = generate_position()
-		while center in used_positions:
-			center = generate_position()
-		
-		used_positions[center] = true
-		var height = randi_range(min_height, max_height)
-		
-		for dz in range(height):
-			var radius = max(1, pile_radius - dz + randi() % 2)
+		# If the box is lower that the ground place it on the floor or there is allerady a box on that position
+		if pos.z < 0 or layers[pos.z].get_cell_source_id(map_pos) != -1:
+			# Get the lowest possible height
+			var height = pos.z + 1
+			var found: bool = false
 			
-			for dx in range(-radius, radius + 1):
-				for dy in range(-radius, radius + 1):
-					var dist = Vector2(dx, dy).length()
-					var chance = randf()
-					
-					if dist <= radius and chance < 0.85:
-						var pos = Vector3i(center.x + dx, center.y + dy, dz)
-						
-						place_box(pos, full_boxes_atlas_coordinates.pick_random(), null, false)
-						
-						if pos.z == 0: used_positions[pos] = true
+			while not found and height < 12:
+				found = layers[height].get_cell_source_id(map_pos) == -1
+				if not found: height += 1
+			
+			if height - pos.z >= 3:
+				# Rudimentary(bad) collision detection
+				box.velocity *= Vector3(-1, -1, 1)
+			elif found:
+				# If there is a possible positions place the box there
+				var possible_directions = can_fall(pos)
+				if possible_directions[0] == Vector2i(0, 0):
+					new_position = pos + Vector3i(0, 0, height - pos.z)
+					from_entity_to_grid(box, new_position)
+				else:
+					var dir = possible_directions.pick_random()
+					box.real_position += Vector3(dir.x, dir.y, 0)
+			elif height == 12:
+				# Otherwise, move the box to a side and let it fall
+				var possible_directions = can_fall(pos)
+				var dir = possible_directions.pick_random()
+				box.real_position += Vector3(dir.x, dir.y, 0)
 
-func generate_position():
-	var x = floor(randi() % grid_size.x) - floor(grid_size.x / 2.0)
-	var y = floor(randi() % grid_size.y) - floor(grid_size.y / 2.0)
+# From a position gives the diference in height with all it's immediete neighbors
+func get_height_diferences(map_position: Vector3i):
+	var position_2d = Vector2i(map_position.x, map_position.y)
+	var current_height = map_position.z
 	
-	return Vector2i(x, y)
+	var dirs = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
+	var diferences = {}
+	
+	for direction in dirs:
+		diferences[direction] = current_height - get_height(position_2d + direction)
+	
+	return diferences
+
+# Returns the directions where the diference is higher that tolerance
+func can_fall(map_position: Vector3i, tolerance: int = 3):
+	var diferences = get_height_diferences(map_position)
+	var possible_positions = []
+	
+	for dir in diferences.keys():
+		if diferences[dir] >= tolerance: possible_positions.append(dir)
+	
+	return possible_positions if possible_positions.size() > 0 else [Vector2i(0, 0)]
+
+# Places entity box to the grid
+func from_entity_to_grid(box: BoxEntity, new_position: Vector3i):
+	place_box(new_position, box.atlas_coords, box.item)
+	box.delete_box()
+	box_entities.erase(box)
 
 func place_random_box(global_pos: Vector3i, item: Object, reload_shadows: bool = true):
 	place_box(global_pos, full_boxes_atlas_coordinates.pick_random(), item, reload_shadows)
@@ -108,9 +121,6 @@ func place_box(global_pos: Vector3i, coords: Vector2i, item: Object, reload_shad
 	var pos = Vector2i(global_pos.x, global_pos.y)
 	var fall_z = global_pos.z
 	
-	while fall_z > 0 and layers[fall_z - 1].get_cell_source_id(pos) == -1: fall_z -= 1
-	
-	global_pos.z = fall_z
 	layers[fall_z].set_cell(pos, 1, coords, 0)
 	
 	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
@@ -159,15 +169,5 @@ func delete_box(pos: Vector3i, update: bool = true, cascade: bool = true):
 		place_shadows()
 		updates["deleted"].append(pos)
 
-var num_boxes = 5
-const item_instance = preload("res://Scenes/Objects/Item.tscn")
-
-func _on_timer_timeout() -> void:
-	num_boxes -= 1
-	
-	var item = null
-	if num_boxes == 4: 
-		item = item_instance.instantiate()
-	
-	place_random_box_entity(Vector3i(0, 0, 31), item)
-	if num_boxes == 0: $Timer.stop()
+func get_height(map_position):
+	return heightmap.get(map_position, 0)

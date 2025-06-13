@@ -1,18 +1,15 @@
 [gd_scene load_steps=3 format=3 uid="uid://wxmno27u1ma6"]
 
 [ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="1_61twt"]
-[ext_resource type="Script" uid="uid://dc0sgr56goj1v" path="res://Scripts/map_layers.gd" id="1_jqda3"]
+[ext_resource type="Script" uid="uid://dc0sgr56goj1v" path="res://Scripts/MapLayers.gd" id="1_jqda3"]
 
 [node name="MapLayers" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_jqda3")
 max_height = 12
 
-[node name="Timer" type="Timer" parent="."]
-autostart = true
-
 [node name="Shadows" type="TileMapLayer" parent="."]
-z_index = -1
+z_index = -2
 y_sort_enabled = true
 position = Vector2(-8, -4)
 tile_set = ExtResource("1_61twt")
@@ -98,5 +95,3 @@ y_sort_enabled = true
 position = Vector2(-8, -103)
 tile_set = ExtResource("1_61twt")
 collision_enabled = false
-
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

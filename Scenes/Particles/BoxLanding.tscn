@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://cm8elqgvcmahc"]
 
-[ext_resource type="Script" uid="uid://v32bpxlgxm4e" path="res://Scripts/box_landing.gd" id="1_alp0d"]
+[ext_resource type="Script" uid="uid://v32bpxlgxm4e" path="res://Scripts/BoxLanding.gd" id="1_alp0d"]
 [ext_resource type="Texture2D" uid="uid://b7o86mqpgos4v" path="res://Assets/isometric boxes - free pixel assets/landing_efect1.png" id="1_b7oxu"]
 [ext_resource type="Texture2D" uid="uid://bstxy0kg7ft7l" path="res://Assets/isometric boxes - free pixel assets/landing_efect2.png" id="2_alp0d"]
 [ext_resource type="Texture2D" uid="uid://bpdbiabo3rqke" path="res://Assets/isometric boxes - free pixel assets/landing_efect3.png" id="3_t586w"]

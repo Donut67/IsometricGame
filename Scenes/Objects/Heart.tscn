@@ -6,7 +6,7 @@
 border_color = Color(1, 0.215686, 0, 1)
 
 [node name="Heart" type="Panel"]
-custom_minimum_size = Vector2(9, 2)
+custom_minimum_size = Vector2(10, 2)
 offset_right = 10.0
 offset_bottom = 2.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_sb1v3")

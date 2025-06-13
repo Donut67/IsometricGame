@@ -23,6 +23,10 @@ Global="*res://Scripts/Global.gd"
 
 sin=false
 
+[gui]
+
+theme/custom_font="uid://canbf7rpwg0by"
+
 [input]
 
 UP={

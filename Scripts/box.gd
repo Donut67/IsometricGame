@@ -13,8 +13,8 @@ var prev_position: Vector3
 
 const box_landing_anim = preload("res://Scenes/Particles/BoxLanding.tscn")
 
-func _process(delta: float) -> void:
-	$Label.text = str(box_layer.position) + "\n" + str(shadow_layer.position)
+#func _process(delta: float) -> void:
+	#$Label.text = str(box_layer.position) + "\n" + str(shadow_layer.position)
 
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
@@ -41,6 +41,7 @@ func set_grid_position(grid_pos: Vector3i, coords: Vector2i):
 
 func delete_box(): 
 	var cpu_particles = box_landing_anim.instantiate()
+	cpu_particles.z_index = z_index
 	cpu_particles.global_position = Global.grid_to_screen(grid_position + Vector3i(0, 0, 1))
 	
 	add_sibling(cpu_particles)
