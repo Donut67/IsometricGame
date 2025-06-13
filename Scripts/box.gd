@@ -4,7 +4,9 @@ extends Physics3DIsometric
 var grid_position: Vector3i
 var time_since_last_fall: float = 0
 var atlas_coords: Vector2i
-var item: Object = null  # Optional item inside the box
+
+var items: Array = []  # Optional item inside the box
+var box_size: int = 5
 
 var prev_position: Vector3
 
@@ -49,3 +51,25 @@ func delete_box():
 	cpu_particles.play()
 	
 	queue_free()
+
+# Puts the item at the end of the list
+func put_item(item: Object):
+	if items.size() == box_size: return
+	
+	items.append(item)
+
+func has_space():
+	return items.size() < box_size
+
+# Returns the last inserted item and removes it from the list
+func get_last_item():
+	return get_nth_item(-1)
+
+# Returns the nth inserted item and removes it from the list
+func get_nth_item(index: int):
+	if index >= items.size(): return null
+	
+	var item = items[index]
+	items.erase(item)
+	
+	return item

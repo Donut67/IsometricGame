@@ -19,6 +19,7 @@ var heightmap: Dictionary = {}
 var box_entities = []
 var updates: Dictionary = {"deleted": []}
 var box_data: Dictionary = {}  # Key: Vector3i, Value: Dictionary with data, e.g. {"item": item}
+var box_size: int = 5
 
 const SHADOW_HALF: Vector2i = Vector2i(0, 0)
 const SHADOW_FULL: Vector2i = Vector2i(1, 0)
@@ -44,7 +45,7 @@ func _process(delta: float) -> void:
 		
 		if box != Vector2i(-1, -1):
 			delete_box(top, true, false)
-			place_box_entity(top, box, box_data[top]["item"])
+			place_box_entity(top, box, box_data[top]["items"])
 			box_data.erase(top)
 	
 	# Proces entities
@@ -110,33 +111,33 @@ func can_fall(map_position: Vector3i, tolerance: int = 3):
 
 # Places entity box to the grid
 func from_entity_to_grid(box: BoxEntity, new_position: Vector3i):
-	place_box(new_position, box.atlas_coords, box.item)
+	place_box(new_position, box.atlas_coords, box.items)
 	box.delete_box()
 	box_entities.erase(box)
 
-func place_random_box(global_pos: Vector3i, item: Object, reload_shadows: bool = true):
-	place_box(global_pos, full_boxes_atlas_coordinates.pick_random(), item, reload_shadows)
+func place_random_box(global_pos: Vector3i, items: Array, reload_shadows: bool = true):
+	place_box(global_pos, full_boxes_atlas_coordinates.pick_random(), items, reload_shadows)
 
-func place_box(global_pos: Vector3i, coords: Vector2i, item: Object, reload_shadows: bool = true):
+func place_box(global_pos: Vector3i, coords: Vector2i, items: Array, reload_shadows: bool = true):
 	var pos = Vector2i(global_pos.x, global_pos.y)
 	var fall_z = global_pos.z
 	
 	layers[fall_z].set_cell(pos, 1, coords, 0)
 	
 	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
-	box_data[global_pos] = {"item": item}
+	box_data[global_pos] = {"items": items}
 	
 	if reload_shadows: place_shadows()
 
-func place_random_box_entity(global_pos: Vector3i, item: Object):
-	place_box_entity(global_pos, full_boxes_atlas_coordinates.pick_random(), item)
+func place_random_box_entity(global_pos: Vector3i, items: Array):
+	place_box_entity(global_pos, full_boxes_atlas_coordinates.pick_random(), items)
 
-func place_box_entity(global_pos: Vector3i, atlas_coords: Vector2i, item: Object):
+func place_box_entity(global_pos: Vector3i, atlas_coords: Vector2i, items: Array):
 	var box = box_entity_instance.instantiate()
-	box.item = item
+	box.items = items
 	add_child(box)
 	box.set_grid_position(global_pos, atlas_coords)
-	box_data[global_pos] = {"item": item}
+	box_data[global_pos] = {"items": items}
 	
 	box_entities.append(box)
 
@@ -171,3 +172,33 @@ func delete_box(pos: Vector3i, update: bool = true, cascade: bool = true):
 
 func get_height(map_position):
 	return heightmap.get(map_position, 0)
+
+# Puts the item at the end of the list
+func put_item(selected_tile: Vector3i, item: Object):
+	if not has_space(selected_tile): return
+	
+	var items = []
+	if box_data.has(selected_tile):
+		items = box_data[selected_tile]["items"]
+	
+	items.append(item)
+	box_data[selected_tile] = {"items": items}
+
+func has_space(selected_tile: Vector3i):
+	return not box_data.has(selected_tile) or box_data[selected_tile].size() < box_size
+
+# Returns the last inserted item and removes it from the list
+func get_last_item(selected_tile: Vector2i, ):
+	return get_nth_item(selected_tile, -1)
+
+# Returns the nth inserted item and removes it from the list
+func get_nth_item(selected_tile: Vector2i, index: int):
+	if not box_data.has(selected_tile) or index >= box_data[selected_tile]["items"].size(): return null
+	
+	var items = box_data[selected_tile]["items"]
+	var item = items[index]
+	items.erase(item)
+	
+	box_data[selected_tile] = {"items": items}
+	
+	return item
