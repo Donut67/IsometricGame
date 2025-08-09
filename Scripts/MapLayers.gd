@@ -17,20 +17,21 @@ extends Node2D
 
 var heightmap: Dictionary = {}
 var box_entities = []
+var entities = []
 var updates: Dictionary = {"deleted": []}
-var box_data: Dictionary = {}  # Key: Vector3i, Value: Dictionary with data, e.g. {"item": item}
+var box_data: Dictionary = {}
+var structure_data: Dictionary = {}
 var box_size: int = 5
 
 const SHADOW_HALF: Vector2i = Vector2i(0, 0)
 const SHADOW_FULL: Vector2i = Vector2i(1, 0)
 const full_boxes_atlas_coordinates = [
-	Vector2i(0, 0), Vector2i(1, 0), Vector2i(4, 0), Vector2i(0, 1), 
-	Vector2i(1, 1), Vector2i(4, 1), Vector2i(0, 4), Vector2i(1, 4), 
-	Vector2i(2, 4), Vector2i(0, 0), Vector2i(1, 0), Vector2i(4, 1)
+	Vector2i(1, 0), Vector2i(3, 0), Vector2i(5, 0), Vector2i(7, 0), 
+	Vector2i(1, 1), Vector2i(3, 1), Vector2i(5, 1), Vector2i(7, 1)
 ]
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var to_process = updates["deleted"]
 	updates["deleted"] = []
 	
@@ -56,7 +57,7 @@ func _process(delta: float) -> void:
 		# If the box is ober the box height limit skip this box
 		if pos.z >= layers.size(): continue
 		
-		var new_position = pos
+		handle_entity_collisions(box)
 		
 		# If the box is lower that the ground place it on the floor or there is allerady a box on that position
 		if pos.z < 0 or layers[pos.z].get_cell_source_id(map_pos) != -1:
@@ -71,20 +72,18 @@ func _process(delta: float) -> void:
 			if height - pos.z >= 3:
 				# Rudimentary(bad) collision detection
 				box.velocity *= Vector3(-1, -1, 1)
-			elif found:
+			elif found or height == 12:
 				# If there is a possible positions place the box there
 				var possible_directions = can_fall(pos)
 				if possible_directions[0] == Vector2i(0, 0):
-					new_position = pos + Vector3i(0, 0, height - pos.z)
+					var new_position = pos + Vector3i(0, 0, height - pos.z)
 					from_entity_to_grid(box, new_position)
 				else:
 					var dir = possible_directions.pick_random()
 					box.real_position += Vector3(dir.x, dir.y, 0)
-			elif height == 12:
-				# Otherwise, move the box to a side and let it fall
-				var possible_directions = can_fall(pos)
-				var dir = possible_directions.pick_random()
-				box.real_position += Vector3(dir.x, dir.y, 0)
+					
+	for entity in entities:
+		handle_entity_collisions(entity)
 
 # From a position gives the diference in height with all it's immediete neighbors
 func get_height_diferences(map_position: Vector3i):
@@ -122,10 +121,20 @@ func place_box(global_pos: Vector3i, coords: Vector2i, items: Array, reload_shad
 	var pos = Vector2i(global_pos.x, global_pos.y)
 	var fall_z = global_pos.z
 	
-	layers[fall_z].set_cell(pos, 1, coords, 0)
+	layers[fall_z].set_cell(pos, 0, coords, 0)
 	
 	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
 	box_data[global_pos] = {"items": items}
+	
+	if reload_shadows: place_shadows()
+
+func place_structure(global_pos: Vector3i, coords: Vector2i, _direction: Vector2i, reload_shadows: bool = true):
+	var pos = Vector2i(global_pos.x, global_pos.y)
+	var fall_z = global_pos.z
+	
+	layers[fall_z].set_cell(pos, 1, coords, 0)
+	
+	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
 	
 	if reload_shadows: place_shadows()
 
@@ -162,7 +171,7 @@ func delete_box(pos: Vector3i, update: bool = true, cascade: bool = true):
 			var current_layer = layer - 1
 			var atlas_coords = layers[layer].get_cell_atlas_coords(map_pos)
 			
-			layers[current_layer].set_cell(map_pos, 1, atlas_coords, 0)
+			layers[current_layer].set_cell(map_pos, 0, atlas_coords, 0)
 		
 	heightmap[map_pos] = max(0, heightmap[map_pos] - 1)
 	
@@ -187,8 +196,13 @@ func put_item(selected_tile: Vector3i, item: Object):
 func has_space(selected_tile: Vector3i):
 	return not box_data.has(selected_tile) or box_data[selected_tile].size() < box_size
 
+func get_items(selected_tile: Vector3i):
+	if not box_data.has(selected_tile): return []
+	
+	return box_data[selected_tile]["items"]
+
 # Returns the last inserted item and removes it from the list
-func get_last_item(selected_tile: Vector2i, ):
+func get_last_item(selected_tile: Vector2i):
 	return get_nth_item(selected_tile, -1)
 
 # Returns the nth inserted item and removes it from the list
@@ -202,3 +216,79 @@ func get_nth_item(selected_tile: Vector2i, index: int):
 	box_data[selected_tile] = {"items": items}
 	
 	return item
+
+# Physics
+func get_voxels_in_aabb(aabb: AABB) -> Array:
+	var voxels: Array = []
+	
+	var min_x = int(floor(aabb.position.x))
+	var min_y = int(floor(aabb.position.y))
+	var min_z = int(floor(aabb.position.z))
+	var max_x = int(floor(aabb.position.x + aabb.size.x))
+	var max_y = int(floor(aabb.position.y + aabb.size.y))
+	var max_z = int(floor(aabb.position.z + aabb.size.z))
+	
+	for x in range(min_x, max_x+1):
+		for y in range(min_y, max_y+1):
+			for z in range(min_z, max_z+1):
+				voxels.append(Vector3i(x, y, z))
+	
+	return voxels
+
+func handle_entity_collisions(entity: Physics3DIsometric):
+	var aabb: AABB = entity.get_aabb()
+	
+	# Handle world (static block) collisions
+	for voxel in get_voxels_in_aabb(aabb):
+		if box_data.has(voxel):
+			var block_aabb = AABB(voxel, Vector3.ONE)
+			if aabb.intersects(block_aabb):
+				_resolve_static_block_collision(entity, block_aabb)
+	
+	# Handle collisions with other boxes
+	for other in box_entities:
+		if other == entity: continue
+		if aabb.intersects(other.get_aabb()):
+			_resolve_entity_collision(entity, other)
+
+func _resolve_static_block_collision(entity, block_aabb: AABB):
+	var entity_aabb = entity.get_aabb()
+	var overlap_x = min(entity_aabb.position.x + entity_aabb.size.x, block_aabb.position.x + block_aabb.size.x) - max(entity_aabb.position.x, block_aabb.position.x)
+	var overlap_y = min(entity_aabb.position.y + entity_aabb.size.y, block_aabb.position.y + block_aabb.size.y) - max(entity_aabb.position.y, block_aabb.position.y)
+	var overlap_z = min(entity_aabb.position.z + entity_aabb.size.z, block_aabb.position.z + block_aabb.size.z) - max(entity_aabb.position.z, block_aabb.position.z)
+
+	if overlap_x <= overlap_y and overlap_x <= overlap_z:
+		entity.real_position.x += overlap_x if entity.velocity.x < 0 else -overlap_x
+		entity.velocity.x = 0
+	elif overlap_y <= overlap_x and overlap_y <= overlap_z:
+		entity.real_position.y += overlap_y if entity.velocity.y < 0 else -overlap_y
+		entity.velocity.y = 0
+	else:
+		entity.real_position.z += overlap_z if entity.velocity.z < 0 else -overlap_z
+		entity.velocity.z = 0
+
+func _resolve_entity_collision(a, b):
+	var a_aabb = a.get_aabb()
+	var b_aabb = b.get_aabb()
+	var overlap_x = min(a_aabb.position.x + a_aabb.size.x, b_aabb.position.x + b_aabb.size.x) - max(a_aabb.position.x, b_aabb.position.x)
+	var overlap_y = min(a_aabb.position.y + a_aabb.size.y, b_aabb.position.y + b_aabb.size.y) - max(a_aabb.position.y, b_aabb.position.y)
+	var overlap_z = min(a_aabb.position.z + a_aabb.size.z, b_aabb.position.z + b_aabb.size.z) - max(a_aabb.position.z, b_aabb.position.z)
+
+	if overlap_x <= overlap_y and overlap_x <= overlap_z:
+		var adjust = overlap_x / 2
+		a.real_position.x -= adjust
+		b.real_position.x += adjust
+		a.velocity.x = 0
+		b.velocity.x = 0
+	elif overlap_y <= overlap_x and overlap_y <= overlap_z:
+		var adjust = overlap_y / 2
+		a.real_position.y -= adjust
+		b.real_position.y += adjust
+		a.velocity.y = 0
+		b.velocity.y = 0
+	else:
+		var adjust = overlap_z / 2
+		a.real_position.z -= adjust
+		b.real_position.z += adjust
+		a.velocity.z = 0
+		b.velocity.z = 0

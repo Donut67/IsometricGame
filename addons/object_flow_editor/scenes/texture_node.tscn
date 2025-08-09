@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://b63yisn83hgfv"]
+
+[ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_nnamu"]
+[ext_resource type="StyleBox" uid="uid://q67m3dc5vc16" path="res://addons/object_flow_editor/styles/title_source.tres" id="2_nk20j"]
+[ext_resource type="Texture2D" uid="uid://dlu5hgj5laykx" path="res://Assets/isometric boxes - free pixel assets/items.png" id="3_04cr0"]
+
+[node name="TextureNode" type="GraphNode"]
+theme_override_styles/panel = ExtResource("1_nnamu")
+theme_override_styles/titlebar = ExtResource("2_nk20j")
+title = "Metal Scrap"
+slot/0/left_enabled = true
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = false
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("3_04cr0")
+stretch_mode = 3

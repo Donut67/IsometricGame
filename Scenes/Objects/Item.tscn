@@ -11,6 +11,7 @@ y_sort_enabled = true
 script = ExtResource("1_r82ly")
 bounciness = 0.1
 friction = 20.0
+size = Vector3(0.5, 0.5, 0.5)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 y_sort_enabled = true

@@ -1,0 +1,31 @@
+[gd_resource type="JSON" format=3 uid="uid://dxkssaa5yhx0k"]
+
+[resource]
+data = [{
+"input": ["plastic_chunk", "plastic_chunk"],
+"output": "plastic_bar"
+}, {
+"input": ["plastic_bar", "metal_scrap"],
+"output": "platic_handle"
+}, {
+"input": ["metal_scrap", "metal_scrap"],
+"output": "metal_scrap_bar"
+}, {
+"input": ["platic_handle", "metal_scrap_bar"],
+"output": "hammer"
+}, {
+"input": ["metal_scrap_bar"],
+"output": "metal_scrap_panel",
+"tool": "hammer"
+}, {
+"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"],
+"output": "scrap_structure",
+"tool": "hammer"
+}, {
+"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"],
+"output": "smelting_structure",
+"tool": "hammer"
+}, {
+"input": ["smelting_structure", "metal_scrap_panel"],
+"output": "scrap_smelter"
+}]

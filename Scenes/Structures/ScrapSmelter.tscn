@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://cjfh65a75wisk"]
+
+[ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="1_d24sl"]
+[ext_resource type="Script" uid="uid://b8i5nliufquf3" path="res://Scripts/scrap_smelter.gd" id="1_f3bsv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oqbwo"]
+bg_color = Color(0.321569, 0.321569, 0.376471, 1)
+border_color = Color(0.8, 0.333333, 0.2, 1)
+
+[node name="ScrapSmelter" type="Node2D"]
+script = ExtResource("1_f3bsv")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0)
+tile_set = ExtResource("1_d24sl")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = -8.0
+offset_top = -12.0
+offset_right = 8.0
+offset_bottom = -10.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_oqbwo")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

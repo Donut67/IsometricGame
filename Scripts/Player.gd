@@ -43,45 +43,16 @@ func _physics_process(delta):
 	choose_anim(dir)
 	move(dir, delta)
 
-func set_holding_item(item: Node):
-	holding_item = item
-	add_child(item)
-
-func remove_holding_item():
-	holding_item.queue_free()
-	holding_item = null
-
 func choose_anim(dir):
 	if _attack: playback.travel("Attack")
 	elif dir == Vector2.ZERO: playback.travel("Idle")
 	else: playback.travel("Walk")
 
-
 func move(dir, delta):
-	var anlge_degrees = 0
-	
-	if dir.x == 1: 
-		if dir.y == 0: anlge_degrees = 0
-		elif dir.y == -1: anlge_degrees = -angle
-		else: anlge_degrees = angle
-	elif dir.x == 0:
-		if dir.y == 1: anlge_degrees = 90
-		elif dir.y == -1: anlge_degrees = 270
-	else:
-		if dir.y == 1: anlge_degrees = 180 - angle
-		elif dir.y == 0: anlge_degrees = 180
-		else: anlge_degrees = 180 + angle
-	
-	if dir != Vector2.ZERO: 
-		var vec = Vector2(vel * cos(PI/180*anlge_degrees), vel * sin(PI/180*anlge_degrees))
-		vec = vec * delta
-		move_and_collide(vec)
-	else:
-		move_and_collide(Vector2.ZERO * delta)
+	move_and_collide(dir * vel * delta)
 	
 	update_animation_parameters()
 	if dir.x != 0 or dir.y != 0: previous_dir = dir
-
 
 func update_animation_parameters():
 	if previous_dir == Vector2.ZERO: return
@@ -98,13 +69,13 @@ func update_animation_parameters():
 		holding_item.real_position = Global.screen_to_grid_f($BoxPositions.get_child(child).position, 0)
 		holding_item.z_index = 0 if child > 1 and child < 7 else -1
 
-func take_damage(value):
-	lives -= value
-	$LiveOverlay.update_lives()
+func set_holding_item(item: Node):
+	holding_item = item
+	add_child(item)
 
-func _on_AttackTimer_timeout():
-	_attack = false
-	attacked = false
+func remove_holding_item():
+	holding_item.queue_free()
+	holding_item = null
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.owner.is_in_group("Item"):

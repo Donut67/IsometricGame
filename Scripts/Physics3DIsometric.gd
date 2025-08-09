@@ -10,6 +10,7 @@ var gravity := Vector3(0, 0, -25.0)  # Gravity pulls down in Z (height)
 @export var terminal_velocity := -100.0
 @export var friction := 5.0  # Higher means more resistance (units per second)
 @export var apply_gravity := true
+@export var size := Vector3.ONE
 
 func _physics_process(delta):
 	# Apply gravity
@@ -35,7 +36,7 @@ func _physics_process(delta):
 func apply_friction(delta: float) -> void:
 	var horizontal_velocity = velocity
 	horizontal_velocity.z = 0
-
+	
 	var speed = horizontal_velocity.length()
 	if speed > 0.001:
 		var friction_force = friction * delta
@@ -52,3 +53,17 @@ func update_z_index():
 	const Z_DEPTH_MULTIPLIER := 1
 	
 	z_index = int((real_position.x + real_position.y) * TILEMAP_DEPTH_MULTIPLIER + real_position.z * Z_DEPTH_MULTIPLIER)
+
+func get_aabb() -> AABB:
+	return AABB(real_position, size)
+
+func intersects(other: Physics3DIsometric) -> bool:
+	var min = real_position
+	var max = real_position + size
+	
+	var other_min = other.real_position
+	var other_max = other.real_position + other.size
+	
+	return (min.x < other_max.x and max.x > other_min.x and
+			min.y < other_max.y and max.y > other_min.y and
+			min.z < other_max.z and max.z > other_min.z)

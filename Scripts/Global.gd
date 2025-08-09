@@ -14,36 +14,57 @@ const GIRL_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction
 var current_character = BASE_CHARACTER_TEXTURE
 var max_round = 0
 var current_scene = null
-var recipe_list: Array = []
 
+# Items
 const items_atlas_coords: Dictionary = {
-	"metal_scrap": Vector2i(0, 0),
-	"plastic_chunk": Vector2i(1, 0),
-	"carbon_dust": Vector2i(2, 0),
-	"metal_panel": Vector2i(0, 1),
-	"reinforced_scrap": Vector2i(1, 1),
-	"raw_frame_part": Vector2i(2, 1),
-	"insulation_patch": Vector2i(3, 1),
-	"insulated_joint": Vector2i(4, 1),
-	"plastic_shell": Vector2i(5, 1),
-	"coated_wiring": Vector2i(6, 1),
-	"basic_connector": Vector2i(7, 1),
-	"crude_circuit": Vector2i(8, 1),
-	"machine_frame_base": Vector2i(9, 1),
-	"machine_frame_part": Vector2i(10, 1),
-	"smelter": Vector2i(11, 1)
+	"metal_scrap": [Vector2i(0, 0), ""],
+	"plastic_chunk": [Vector2i(1, 0), ""],
+	"carbon_dust": [Vector2i(2, 0), ""],
+	"metal_scrap_bar": [Vector2i(0, 1), ""],
+	"plastic_bar": [Vector2i(1, 1), ""],
+	"platic_handle": [Vector2i(2, 1), ""],
+	"hammer": [Vector2i(3, 1), "Tool"],
+	"metal_scrap_panel": [Vector2i(4, 1), ""],
+	"scrap_structure": [Vector2i(5, 1), ""],
+	"smelting_structure": [Vector2i(6, 1), ""],
+	"scrap_smelter": [Vector2i(7, 1), "Structure"]
 }
 
-func _ready():
-	var json: = FileAccess.open("res://Assets/recipes.tres", FileAccess.READ)
-	var txt: String = json.get_as_text()
-	var cropped = txt.right(-(txt.find("data = ") + 7))
-	recipe_list = JSON.parse_string(cropped)
+var recipe_list: Array = [
+	{"input": ["plastic_chunk", "plastic_chunk"], "output": "plastic_bar"}, 
+	{"input": ["plastic_bar", "metal_scrap"], "output": "platic_handle"}, 
+	{"input": ["metal_scrap", "metal_scrap"], "output": "metal_scrap_bar"}, 
+	{"input": ["platic_handle", "metal_scrap_bar"], "output": "hammer"}, 
 	
-	#for recipe in recipe_list:
-		#var key = get_recipe_key(recipe["input"])
-		#recipe_map[key] = recipe
-		
+	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "hammer"}, 
+	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": "hammer"}, 
+	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "smelting_structure", "tool": "hammer"},  
+	{"input": ["smelting_structure", "metal_scrap_panel"], "output": "scrap_smelter"},
+]
+
+# Structures
+const structure_atlas_coords: Dictionary = {
+	"scrap_smelter": [Vector2i(1, 0), preload("res://Scenes/Structures/ScrapSmelter.tscn")]
+}
+
+var structure_recipe_list: Dictionary = {
+	"scrap_smelter": {}
+}
+
+# Items functions
+func get_item_atlas_coords(item_type: String) -> Vector2i:
+	return items_atlas_coords[item_type][0]
+
+func get_item_group(item_type: String) -> String:
+	return items_atlas_coords[item_type][1]
+
+# Structure functions
+func get_structure_atlas_coords(item_type: String) -> Vector2i:
+	return structure_atlas_coords[item_type][0]
+
+func get_structure_scene(item_type: String) -> PackedScene:
+	return structure_atlas_coords[item_type][1]
+
 func get_recipe_key(items: Array) -> String:
 	items.sort()
 	return ",".join(items)
@@ -56,6 +77,63 @@ func find_recipe(items: Array[String]) -> Dictionary:
 		if this == that: return recipe
 	
 	return {}
+
+func find_advanced_recipe(items: Array[String], tool: String) -> Dictionary:
+	var best_recipe = {}
+	var best_match_count = -1
+	
+	for recipe in recipe_list:
+		# Check tool requirement
+		if not "tool" in recipe or "tool" in recipe and recipe["tool"] != tool:
+			continue
+		
+		var required_inputs = recipe["input"]
+		var matched_inputs = []
+		var available_copy = items.duplicate()
+		
+		# Try to match recipe inputs against available items (respecting item count)
+		for req_item in required_inputs:
+			if req_item in available_copy:
+				matched_inputs.append(req_item)
+				available_copy.erase(req_item)  # Remove matched item to avoid double counting
+		
+		var match_count = matched_inputs.size()
+		
+		# Only consider recipes that have fully matched their inputs
+		if match_count == required_inputs.size() and match_count > best_match_count:
+			best_match_count = match_count
+			best_recipe = recipe
+	
+	return best_recipe
+
+func find_structure_recipe(items: Array[String], structure: String) -> Dictionary:
+	var best_recipe = {}
+	var best_match_count = -1
+	
+	for recipe in recipe_list:
+		# Check structure requirement
+		if not "structure" in recipe or "structure" in recipe and recipe["structure"] != structure:
+			continue
+		
+		var required_inputs = recipe["input"]
+		var matched_inputs = []
+		var available_copy = items.duplicate()
+		
+		# Try to match recipe inputs against available items (respecting item count)
+		for req_item in required_inputs:
+			if req_item in available_copy:
+				matched_inputs.append(req_item)
+				available_copy.erase(req_item)  # Remove matched item to avoid double counting
+		
+		var match_count = matched_inputs.size()
+		
+		# Only consider recipes that have fully matched their inputs
+		if match_count == required_inputs.size() and match_count > best_match_count:
+			best_match_count = match_count
+			best_recipe = recipe
+	
+	return best_recipe
+	
 
 func _goto_scene(scene):
 	call_deferred("_deferrend_goto_scene", scene)
@@ -82,8 +160,8 @@ func screen_to_grid(screen_pos: Vector2, z: int) -> Vector3i:
 	var adj_y = screen_pos.y + z * LAYER_HEIGHT
 
 	# Invert isometric projection
-	var x = ((screen_pos.x / (TILE_SIZE.x / 2)) + (adj_y / (TILE_SIZE.y / 2))) / 2
-	var y = ((adj_y / (TILE_SIZE.y / 2)) - (screen_pos.x / (TILE_SIZE.x / 2))) / 2
+	var x = ((screen_pos.x / (TILE_SIZE.x / 2.0)) + (adj_y / (TILE_SIZE.y / 2.0))) / 2
+	var y = ((adj_y / (TILE_SIZE.y / 2.0)) - (screen_pos.x / (TILE_SIZE.x / 2.0))) / 2
 
 	return Vector3i(round(x), round(y), z)
 
@@ -93,8 +171,8 @@ func screen_to_grid_f(screen_pos: Vector2, z: float) -> Vector3:
 	var adj_y = screen_pos.y + z * LAYER_HEIGHT
 
 	# Invert isometric projection
-	var x = ((screen_pos.x / (TILE_SIZE.x / 2)) + (adj_y / (TILE_SIZE.y / 2))) / 2
-	var y = ((adj_y / (TILE_SIZE.y / 2)) - (screen_pos.x / (TILE_SIZE.x / 2))) / 2
+	var x = ((screen_pos.x / (TILE_SIZE.x / 2.0)) + (adj_y / (TILE_SIZE.y / 2.0))) / 2
+	var y = ((adj_y / (TILE_SIZE.y / 2.0)) - (screen_pos.x / (TILE_SIZE.x / 2.0))) / 2
 
 	return Vector3(x, y, z)
 

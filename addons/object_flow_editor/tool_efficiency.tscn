@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3 uid="uid://d2fdk5l2jxfqm"]
+
+[ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_kalnc"]
+[ext_resource type="Script" uid="uid://dgbayk18vohbb" path="res://addons/object_flow_editor/tool_efficiency.gd" id="1_maiw5"]
+[ext_resource type="StyleBox" uid="uid://dvjqalnd4vagv" path="res://addons/object_flow_editor/styles/title_resource.tres" id="2_mio6b"]
+
+[node name="tool_efficiency" type="GraphNode"]
+offset_right = 9.0
+offset_bottom = 55.0
+theme_override_styles/panel = ExtResource("1_kalnc")
+theme_override_styles/titlebar = ExtResource("2_mio6b")
+title = "Tool efficiency"
+slot/0/left_enabled = true
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = false
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+script = ExtResource("1_maiw5")
+
+[node name="ToolEfficiencies" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="add_tool" type="Button" parent="."]
+layout_mode = 2
+text = "Add Tool"
+
+[connection signal="pressed" from="add_tool" to="." method="_on_add_tool_pressed"]

@@ -619,7 +619,7 @@ radius = 24.0
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_tree") groups=["player"]]
 y_sort_enabled = true
 script = ExtResource("10")
-vel = 54
+vel = 48
 animation_tree = NodePath("AnimationTree")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

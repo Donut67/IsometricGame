@@ -1,17 +1,26 @@
 extends Physics3DIsometric
+class_name Item
 
 var item_type: String = ""
 
 func _ready():
-	var material = load("res://Assets/outline.gdshader")
+	var shader = load("res://Assets/outline.gdshader")
 	$TileMapLayer.material = ShaderMaterial.new()
-	$TileMapLayer.material.set("shader", material)
+	$TileMapLayer.material.set("shader", shader)
 	$TileMapLayer.material.set("shader_parameter/width", 0)
+	
+	size = Vector3.ONE * 0.5
 
 func set_item_type(item: String):
 	item_type = item
-	$TileMapLayer.set_cell(Vector2i.ZERO, 1, Global.items_atlas_coords[item_type])
-	#$Label.text = item_type
+	$TileMapLayer.set_cell(Vector2i.ZERO, 1, Global.get_item_atlas_coords(item_type))
+	
+	var type = Global.get_item_group(item_type)
+	if type != "":
+		remove_from_group("Item")
+		
+		add_to_group(type)
+		add_to_group("Item")
 
 func set_real_position(real_pos: Vector3):
 	real_position = real_pos

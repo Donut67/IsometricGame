@@ -21,7 +21,6 @@ const box_landing_anim = preload("res://Scenes/Particles/BoxLanding.tscn")
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	
-	var height = real_position.z
 	shadow_layer.position = Global.grid_to_screen(Vector3(real_position.z, 0, -real_position.z))
 	
 	prev_position = real_position
@@ -30,7 +29,7 @@ func set_real_position(real_pos: Vector3, coords: Vector2i):
 	real_position = real_pos
 	atlas_coords = coords
 	
-	box_layer.set_cell(Vector2i(-1, 0), 1, coords)
+	box_layer.set_cell(Vector2i(-1, 0), 0, coords)
 	position = Global.grid_to_screen(real_position)
 
 func set_grid_position(grid_pos: Vector3i, coords: Vector2i):
@@ -38,7 +37,7 @@ func set_grid_position(grid_pos: Vector3i, coords: Vector2i):
 	real_position = Vector3(grid_position)
 	atlas_coords = coords
 	
-	box_layer.set_cell(Vector2i(-1, 0), 1, coords)
+	box_layer.set_cell(Vector2i(-1, 0), 0, coords)
 	position = Global.grid_to_screen(grid_pos)
 
 func delete_box(): 
