@@ -20,6 +20,8 @@ texture = ExtResource("1_u32v6")
 5:1/0 = 0
 6:1/0 = 0
 7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
 
 [resource]
 tile_shape = 1

@@ -27,19 +27,23 @@ const items_atlas_coords: Dictionary = {
 	"metal_scrap_panel": [Vector2i(4, 1), ""],
 	"scrap_structure": [Vector2i(5, 1), ""],
 	"smelting_structure": [Vector2i(6, 1), ""],
-	"scrap_smelter": [Vector2i(7, 1), "Structure"]
+	"scrap_smelter": [Vector2i(7, 1), "Structure"],
+	"raw_metal": [Vector2i(0, 2), ""],
+	"metal_bar": [Vector2i(1, 2), ""],
 }
 
 var recipe_list: Array = [
-	{"input": ["plastic_chunk", "plastic_chunk"], "output": "plastic_bar"}, 
-	{"input": ["plastic_bar", "metal_scrap"], "output": "platic_handle"}, 
-	{"input": ["metal_scrap", "metal_scrap"], "output": "metal_scrap_bar"}, 
-	{"input": ["platic_handle", "metal_scrap_bar"], "output": "hammer"}, 
+	{"input": ["plastic_chunk", "plastic_chunk"], "output": "plastic_bar"},
+	{"input": ["plastic_bar", "metal_scrap"], "output": "platic_handle"},
+	{"input": ["metal_scrap", "metal_scrap"], "output": "metal_scrap_bar"},
+	{"input": ["platic_handle", "metal_scrap_bar"], "output": "hammer"},
 	
-	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "hammer"}, 
+	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "hammer"},
 	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": "hammer"}, 
-	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "smelting_structure", "tool": "hammer"},  
+	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "smelting_structure", "tool": "hammer"},
 	{"input": ["smelting_structure", "metal_scrap_panel"], "output": "scrap_smelter"},
+	
+	{"input": ["raw_metal", "raw_metal"], "output": "metal_bar"},
 ]
 
 # Structures
@@ -48,7 +52,9 @@ const structure_atlas_coords: Dictionary = {
 }
 
 var structure_recipe_list: Dictionary = {
-	"scrap_smelter": {}
+	"scrap_smelter": [
+		{"input": ["metal_scrap", "carbon_dust"], "output": "raw_metal", "time": 5}, 
+	]
 }
 
 # Items functions
@@ -106,15 +112,11 @@ func find_advanced_recipe(items: Array[String], tool: String) -> Dictionary:
 	
 	return best_recipe
 
-func find_structure_recipe(items: Array[String], structure: String) -> Dictionary:
+func find_structure_recipe(items: Array, structure: String) -> Dictionary:
 	var best_recipe = {}
 	var best_match_count = -1
 	
-	for recipe in recipe_list:
-		# Check structure requirement
-		if not "structure" in recipe or "structure" in recipe and recipe["structure"] != structure:
-			continue
-		
+	for recipe in structure_recipe_list[structure]:
 		var required_inputs = recipe["input"]
 		var matched_inputs = []
 		var available_copy = items.duplicate()

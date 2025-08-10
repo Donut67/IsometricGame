@@ -1,17 +1,22 @@
 extends Node2D
 
-@onready var player = $MapLayers/Player
 @onready var interact_layer = $TileMapLayer
 @onready var world = $MapLayers
-@onready var mouse_area = $Area2D
+@onready var mouse_area = $MouseArea
+
+var player : CharacterBody2D
 
 var placement_position: Vector2i
 var throw_height: float = 0
 var charging_time: float = 0
 var is_thow_charging: bool = false
+
 var items_in_range: Array = []
 var closest_item: Node2D = null
+var structures_in_range: Array = []
+var closest_structure: Node2D = null
 
+const player_instance = preload("res://Scenes/Entities/Player.tscn")
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
 const item_instance = preload("res://Scenes/Objects/Item.tscn")
 
@@ -30,6 +35,18 @@ func _process(delta: float) -> void:
 		closest_item = get_closest_item(get_global_mouse_position(), item_list)
 		closest_item.highlight(true)
 	else: closest_item = null
+	
+	# Get closest structure to the player
+	var p_structure_list = Global.intersect(structures_in_range, player.structures_in_range)
+	var structure_list = []
+	for i in p_structure_list: if is_instance_valid(i): structure_list.append(i)
+	
+	if closest_structure != null: closest_structure.highlight(false)
+	
+	if structure_list.size() != 0:
+		closest_structure = get_closest_item(get_global_mouse_position(), structure_list)
+		closest_structure.highlight(true)
+	else: closest_structure = null
 	
 	# Charge throw strenght
 	if is_thow_charging:
@@ -75,6 +92,7 @@ func _input(event: InputEvent) -> void:
 				
 				closest_item.set_real_position(Vector3.ZERO)
 				closest_item.get_parent().remove_child(closest_item)
+				world.entities.erase(closest_item)
 				closest_item.apply_gravity = false
 				
 				player.set_holding_item(closest_item)
@@ -94,28 +112,35 @@ func _input(event: InputEvent) -> void:
 			var atlas_coords = Global.get_structure_atlas_coords(player.holding_item.item_type)
 			var structure = Global.get_structure_scene(player.holding_item.item_type).instantiate()
 			structure.position = Global.grid_to_screen(selected_tile)
-			add_child(structure)
+			world.add_child(structure)
 			
 			world.place_structure(selected_tile, atlas_coords, Vector2i.DOWN)
 			player.remove_holding_item()
 		elif what_holding == "Item":
 			# If holding item and item in range, try fuse items and drop the fusion
-				
-			var recipe = Global.find_recipe([player.holding_item.item_type, closest_item.item_type])
 			
-			if recipe.has("output"):
-				create_item_and_throw(closest_item.real_position, recipe["output"], selected_tile)
+			if closest_item != null:
+				var recipe = Global.find_recipe([player.holding_item.item_type, closest_item.item_type])
 				
-				# Remove the input items
-				items_in_range.erase(closest_item)
-				player.items_in_range.erase(closest_item)
-				
-				items_in_range.erase(player.holding_item)
-				player.items_in_range.erase(player.holding_item)
-				
-				closest_item.queue_free()
-				closest_item = null
-				player.remove_holding_item()
+				if recipe.has("output"):
+					create_item_and_throw(closest_item.real_position, recipe["output"], selected_tile)
+					
+					# Remove the input items
+					items_in_range.erase(closest_item)
+					player.items_in_range.erase(closest_item)
+					world.entities.erase(closest_item)
+					
+					items_in_range.erase(player.holding_item)
+					player.items_in_range.erase(player.holding_item)
+					
+					closest_item.queue_free()
+					closest_item = null
+					player.remove_holding_item()
+			if closest_structure != null:
+				player.holding_item.get_parent().remove_child(player.holding_item)
+				closest_structure.game = self
+				closest_structure.add_item(player.holding_item)
+				player.holding_item = null
 		elif what_holding == "Tool":
 			# If holding tool and items in range, try fuse items and drop the fusion
 			
@@ -139,6 +164,7 @@ func _input(event: InputEvent) -> void:
 						inputs.erase(obj.item_type)
 						items_in_range.erase(obj)
 						player.items_in_range.erase(obj)
+						world.entities.erase(obj)
 						obj.queue_free()
 	elif event.is_action_released("INTERACT"):
 		# If not holding anything and the selected tile is a box, take item from box
@@ -156,7 +182,7 @@ func _input(event: InputEvent) -> void:
 			
 			if items.size() != 0:
 				var item = items.pop_back()
-				add_child(item)
+				world.add_child(item)
 				world.entities.append(item)
 				world.box_data[selected_tile] = {"items": items}
 				item.real_position = Vector3(selected_tile) + Vector3(0, 0, 1)
@@ -197,9 +223,9 @@ func _input(event: InputEvent) -> void:
 			world.box_entities.append(item)
 		elif item.is_in_group("Item"):
 			item.set_real_position(Global.screen_to_grid_f(pos, 1)) 
+			world.entities.append(item)
 		
 		world.add_child(item)
-		world.entities.append(item)
 		
 		# Reset throwing variables
 		throw_height = 0
@@ -213,7 +239,7 @@ func create_item_and_throw(new_position, item_type, selected_tile):
 	var item = item_instance.instantiate()
 	item.set_item_type(item_type)
 	item.real_position = new_position
-	add_child(item)
+	world.add_child(item)
 	world.entities.append(item)
 	
 	# Throw item towards the player
@@ -267,18 +293,31 @@ func get_closest_item(objective: Vector2, items_list: Array) -> Node2D:
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.owner.is_in_group("Item"):
 		items_in_range.append(area.owner)
+	elif area.owner.is_in_group("PlacedStructure"):
+		structures_in_range.append(area.owner)
 
 func _on_area_2d_area_exited(area: Area2D) -> void:
 	if items_in_range.has(area.owner):
 		items_in_range.erase(area.owner)
+	elif structures_in_range.has(area.owner):
+		structures_in_range.erase(area.owner)
 
 # DEBUG
 var solicitated_boxes = []
 
 func _ready() -> void:
-	solicitated_boxes.append(["scrap_smelter"])
+	player = player_instance.instantiate()
+	player.position = Vector2(-16, 0)
 	
-	for i in range(60):
+	var camera = Camera2D.new()
+	camera.zoom = Vector2(3, 3)
+	player.add_child(camera)
+	
+	world.add_child(player)
+	
+	solicitated_boxes.append(["scrap_smelter", "metal_scrap"])
+	
+	for i in range(120):
 		var possioble_items = ["", "metal_scrap", "carbon_dust", "plastic_chunk"]
 		var box_items = []
 		

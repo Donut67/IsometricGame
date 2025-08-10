@@ -11,6 +11,7 @@ var playback : AnimationNodeStateMachinePlayback
 
 var holding_item: Node = null
 var items_in_range: Array = []
+var structures_in_range: Array = []
 
 const ARROW = preload("res://Scenes/Entities/Arrow.tscn")
 const directions: Dictionary = {
@@ -80,7 +81,11 @@ func remove_holding_item():
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.owner.is_in_group("Item"):
 		items_in_range.append(area.owner)
+	elif area.owner.is_in_group("PlacedStructure"):
+		structures_in_range.append(area.owner)
 
 func _on_area_2d_area_exited(area: Area2D) -> void:
 	if items_in_range.has(area.owner):
 		items_in_range.erase(area.owner)
+	elif structures_in_range.has(area.owner):
+		structures_in_range.erase(area.owner)

@@ -72,7 +72,7 @@ func _process(_delta: float) -> void:
 			if height - pos.z >= 3:
 				# Rudimentary(bad) collision detection
 				box.velocity *= Vector3(-1, -1, 1)
-			elif found or height == 12:
+			elif found:
 				# If there is a possible positions place the box there
 				var possible_directions = can_fall(pos)
 				if possible_directions[0] == Vector2i(0, 0):
@@ -81,7 +81,11 @@ func _process(_delta: float) -> void:
 				else:
 					var dir = possible_directions.pick_random()
 					box.real_position += Vector3(dir.x, dir.y, 0)
-					
+			elif height == 12:
+				var possible_directions = can_fall(pos, 0)
+				var dir = possible_directions.pick_random()
+				box.real_position += Vector3(dir.x, dir.y, 0)
+	
 	for entity in entities:
 		handle_entity_collisions(entity)
 

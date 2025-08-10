@@ -27,6 +27,13 @@ enabled=PackedStringArray("res://addons/object_flow_editor/plugin.cfg")
 
 sin=false
 
+[global_group]
+
+Item=""
+player=""
+BoxEntity=""
+PlacedStructure=""
+
 [gui]
 
 theme/custom_font="uid://canbf7rpwg0by"
