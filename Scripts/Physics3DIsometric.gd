@@ -31,7 +31,6 @@ func _physics_process(delta):
 	# Snap 3D position to screen (2D)
 	var screen_pos: Vector2 = Global.grid_to_screen(real_position)
 	position = screen_pos
-	update_z_index()
 
 func apply_friction(delta: float) -> void:
 	var horizontal_velocity = velocity
@@ -47,23 +46,16 @@ func apply_friction(delta: float) -> void:
 		velocity.x = 0
 		velocity.y = 0
 
-func update_z_index():
-	# These values depend on your grid layout and TileMap behavior
-	const TILEMAP_DEPTH_MULTIPLIER := 10
-	const Z_DEPTH_MULTIPLIER := 1
-	
-	z_index = int((real_position.x + real_position.y) * TILEMAP_DEPTH_MULTIPLIER + real_position.z * Z_DEPTH_MULTIPLIER)
-
 func get_aabb() -> AABB:
 	return AABB(real_position, size)
 
 func intersects(other: Physics3DIsometric) -> bool:
-	var min = real_position
-	var max = real_position + size
+	var _min = real_position
+	var _max = real_position + size
 	
 	var other_min = other.real_position
 	var other_max = other.real_position + other.size
 	
-	return (min.x < other_max.x and max.x > other_min.x and
-			min.y < other_max.y and max.y > other_min.y and
-			min.z < other_max.z and max.z > other_min.z)
+	return (_min.x < other_max.x and _max.x > other_min.x and
+			_min.y < other_max.y and _max.y > other_min.y and
+			_min.z < other_max.z and _max.z > other_min.z)

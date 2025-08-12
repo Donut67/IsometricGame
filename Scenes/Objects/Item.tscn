@@ -15,14 +15,12 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 y_sort_enabled = true
-position = Vector2(-8, -4)
-tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
+tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("2_jqgq0")
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -1)
 shape = SubResource("CircleShape2D_kugfl")
 
 [node name="Label" type="Label" parent="."]

@@ -7,6 +7,8 @@ const TITLE = preload("res://Scenes/Game/TitleScreen.tscn")
 const GAME = preload("res://Scenes/Game/InGame.tscn")
 const END = preload("res://Scenes/Game/EndScreen.tscn")
 
+const box_landing_anim = preload("res://Scenes/Particles/BoxLanding.tscn")
+
 const BASE_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png")
 const BOY_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Boy_Character.png")
 const GIRL_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Girl_Character.png")
@@ -23,38 +25,60 @@ const items_atlas_coords: Dictionary = {
 	"metal_scrap_bar": [Vector2i(0, 1), ""],
 	"plastic_bar": [Vector2i(1, 1), ""],
 	"platic_handle": [Vector2i(2, 1), ""],
-	"hammer": [Vector2i(3, 1), "Tool"],
+	"scrap_hammer": [Vector2i(3, 1), "Tool"],
 	"metal_scrap_panel": [Vector2i(4, 1), ""],
 	"scrap_structure": [Vector2i(5, 1), ""],
-	"smelting_structure": [Vector2i(6, 1), ""],
+	"scrap_smelting_structure": [Vector2i(6, 1), ""],
 	"scrap_smelter": [Vector2i(7, 1), "Structure"],
 	"raw_metal": [Vector2i(0, 2), ""],
 	"metal_bar": [Vector2i(1, 2), ""],
+	"metal_panel": [Vector2i(2, 2), ""],
+	"metal_structure": [Vector2i(3, 2), ""],
+	"metal_smelting_structure": [Vector2i(4, 2), ""],
+	"basic_smelter": [Vector2i(5, 2), "Structure"],
+	"metal_hammer": [Vector2i(6, 2), "Tool"],
+	"metal_block": [Vector2i(7, 2), ""],
+	"metal_cast": [Vector2i(8, 2), "Structure"],
 }
 
 var recipe_list: Array = [
 	{"input": ["plastic_chunk", "plastic_chunk"], "output": "plastic_bar"},
 	{"input": ["plastic_bar", "metal_scrap"], "output": "platic_handle"},
 	{"input": ["metal_scrap", "metal_scrap"], "output": "metal_scrap_bar"},
-	{"input": ["platic_handle", "metal_scrap_bar"], "output": "hammer"},
+	{"input": ["platic_handle", "metal_scrap_bar"], "output": "scrap_hammer"},
 	
-	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "hammer"},
-	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": "hammer"}, 
-	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "smelting_structure", "tool": "hammer"},
-	{"input": ["smelting_structure", "metal_scrap_panel"], "output": "scrap_smelter"},
+	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "scrap_hammer"},
+	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": "scrap_hammer"}, 
+	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "scrap_smelting_structure", "tool": "scrap_hammer"},
+	{"input": ["scrap_smelting_structure", "metal_scrap_panel"], "output": "scrap_smelter"},
 	
 	{"input": ["raw_metal", "raw_metal"], "output": "metal_bar"},
+	{"input": ["metal_bar"], "output": "metal_panel", "tool": "scrap_hammer"},
+	{"input": ["metal_panel", "metal_panel", "metal_panel", "metal_panel"], "output": "metal_structure", "tool": "scrap_hammer"}, 
+	{"input": ["metal_structure", "metal_bar", "carbon_dust"], "output": "metal_smelting_structure", "tool": "scrap_hammer"},
+	{"input": ["metal_smelting_structure", "metal_panel"], "output": "basic_smelter"},
+	
+	{"input": ["platic_handle", "metal_bar"], "output": "metal_hammer"},
+	
+	{"input": ["metal_panel", "metal_panel"], "output": "metal_block", "tool": "metal_hammer"},
+	{"input": ["metal_block"], "output": "metal_cast", "tool": "metal_hammer"},
 ]
 
 # Structures
+# Key(item_type): Array([atlas_coords, PackagedScene])
 const structure_atlas_coords: Dictionary = {
-	"scrap_smelter": [Vector2i(1, 0), preload("res://Scenes/Structures/ScrapSmelter.tscn")]
+	"scrap_smelter": [Vector2i(1, 0), preload("res://Scenes/Structures/ScrapSmelter.tscn")],
+	"basic_smelter": [Vector2i(1, 1), preload("res://Scenes/Structures/BasicSmelter.tscn")],
+	"metal_cast": [Vector2i(1, 2), preload("res://Scenes/Structures/MetalCast.tscn")],
 }
 
 var structure_recipe_list: Dictionary = {
 	"scrap_smelter": [
-		{"input": ["metal_scrap", "carbon_dust"], "output": "raw_metal", "time": 5}, 
-	]
+		{"input": ["metal_scrap", "carbon_dust", "carbon_dust"], "output": "raw_metal", "time": 5}, 
+	],
+	"basic_smelter": [
+		{"input": ["metal_scrap", "carbon_dust"], "output": "raw_metal", "time": 4}, 
+	],
 }
 
 # Items functions
@@ -75,7 +99,9 @@ func get_recipe_key(items: Array) -> String:
 	items.sort()
 	return ",".join(items)
 
-func find_recipe(items: Array[String]) -> Dictionary:
+func find_recipe(items: Array[String], tool: String = "") -> Dictionary:
+	if tool != "": return find_advanced_recipe(items, tool)
+	
 	for recipe in recipe_list:
 		var this = get_recipe_key(recipe["input"])
 		var that = get_recipe_key(items)
@@ -135,7 +161,13 @@ func find_structure_recipe(items: Array, structure: String) -> Dictionary:
 			best_recipe = recipe
 	
 	return best_recipe
+
+func play_landing_animation(position):
+	var cpu_particles = box_landing_anim.instantiate()
 	
+	add_sibling(cpu_particles)
+	cpu_particles.global_position = position
+	cpu_particles.play()
 
 func _goto_scene(scene):
 	call_deferred("_deferrend_goto_scene", scene)

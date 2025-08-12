@@ -29,7 +29,9 @@ const full_boxes_atlas_coordinates = [
 	Vector2i(1, 0), Vector2i(3, 0), Vector2i(5, 0), Vector2i(7, 0), 
 	Vector2i(1, 1), Vector2i(3, 1), Vector2i(5, 1), Vector2i(7, 1)
 ]
+
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
+const item_instance = preload("res://Scenes/Objects/Item.tscn")
 
 func _process(_delta: float) -> void:
 	var to_process = updates["deleted"]
@@ -88,6 +90,22 @@ func _process(_delta: float) -> void:
 	
 	for entity in entities:
 		handle_entity_collisions(entity)
+
+func create_item(new_position, item_type):
+	var item = item_instance.instantiate()
+	
+	item.set_item_type(item_type)
+	item.real_position = new_position
+	add_child(item)
+	entities.append(item)
+	
+	return item
+
+func throw_item(item, from, to, normalized = true):
+	var dir_vector = (to - from).normalized() if normalized else (to - from)
+	var noise = Vector3(randf() * 2 - 1, randf() * 2 - 1, 1)
+	
+	item.velocity = Vector3(-2.5, -2.5, 3.125) * (dir_vector + noise)
 
 # From a position gives the diference in height with all it's immediete neighbors
 func get_height_diferences(map_position: Vector3i):

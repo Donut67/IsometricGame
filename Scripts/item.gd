@@ -13,7 +13,7 @@ func _ready():
 
 func set_item_type(item: String):
 	item_type = item
-	$TileMapLayer.set_cell(Vector2i.ZERO, 1, Global.get_item_atlas_coords(item_type))
+	$TileMapLayer.set_cell(Vector2i(-1, 0), 1, Global.get_item_atlas_coords(item_type))
 	
 	var type = Global.get_item_group(item_type)
 	if type != "":
