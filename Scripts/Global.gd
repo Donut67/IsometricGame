@@ -8,6 +8,7 @@ const GAME = preload("res://Scenes/Game/InGame.tscn")
 const END = preload("res://Scenes/Game/EndScreen.tscn")
 
 const box_landing_anim = preload("res://Scenes/Particles/BoxLanding.tscn")
+const item_instance = preload("res://Scenes/Objects/Item.tscn")
 
 const BASE_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png")
 const BOY_CHARACTER_TEXTURE = preload("res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Boy_Character.png")
@@ -18,18 +19,20 @@ var max_round = 0
 var current_scene = null
 
 # Items
-const items_atlas_coords: Dictionary = {
+var items_atlas_coords: Dictionary = {
 	"metal_scrap": [Vector2i(0, 0), ""],
 	"plastic_chunk": [Vector2i(1, 0), ""],
 	"carbon_dust": [Vector2i(2, 0), ""],
 	"metal_scrap_bar": [Vector2i(0, 1), ""],
 	"plastic_bar": [Vector2i(1, 1), ""],
-	"platic_handle": [Vector2i(2, 1), ""],
+	"plastic_handle": [Vector2i(2, 1), ""],
 	"scrap_hammer": [Vector2i(3, 1), "Tool"],
 	"metal_scrap_panel": [Vector2i(4, 1), ""],
-	"scrap_structure": [Vector2i(5, 1), ""],
-	"scrap_smelting_structure": [Vector2i(6, 1), ""],
-	"scrap_smelter": [Vector2i(7, 1), "Structure"],
+	"scrap_trowel": [Vector2i(5, 1), "Tool"],
+	"scrap_structure": [Vector2i(6, 1), ""],
+	"scrap_smelting_structure": [Vector2i(7, 1), ""],
+	"scrap_smelter": [Vector2i(8, 1), "Structure"],
+	"scrap_dropper_platform": [Vector2i(9, 1), "Structure"],
 	"raw_metal": [Vector2i(0, 2), ""],
 	"metal_bar": [Vector2i(1, 2), ""],
 	"metal_panel": [Vector2i(2, 2), ""],
@@ -39,37 +42,48 @@ const items_atlas_coords: Dictionary = {
 	"metal_hammer": [Vector2i(6, 2), "Tool"],
 	"metal_block": [Vector2i(7, 2), ""],
 	"metal_cast": [Vector2i(8, 2), "Structure"],
+	"basic_press": [Vector2i(9, 2), "Structure"],
+	"basic_tube_mill": [Vector2i(10, 2), "Structure"],
 }
 
 var recipe_list: Array = [
 	{"input": ["plastic_chunk", "plastic_chunk"], "output": "plastic_bar"},
-	{"input": ["plastic_bar", "metal_scrap"], "output": "platic_handle"},
+	{"input": ["plastic_bar", "metal_scrap"], "output": "plastic_handle"},
 	{"input": ["metal_scrap", "metal_scrap"], "output": "metal_scrap_bar"},
-	{"input": ["platic_handle", "metal_scrap_bar"], "output": "scrap_hammer"},
+	{"input": ["plastic_handle", "metal_scrap_bar"], "output": "scrap_hammer"},
 	
-	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": "scrap_hammer"},
-	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": "scrap_hammer"}, 
-	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "scrap_smelting_structure", "tool": "scrap_hammer"},
+	{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "tool": ["scrap_hammer"]},
+	{"input": ["plastic_handle", "metal_scrap_panel"], "output": "scrap_trowel"},
+	{"input": ["metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel", "metal_scrap_panel"], "output": "scrap_structure", "tool": ["scrap_hammer"]}, 
+	{"input": ["scrap_structure", "metal_scrap_bar", "carbon_dust"], "output": "scrap_smelting_structure", "tool": ["scrap_hammer"]},
 	{"input": ["scrap_smelting_structure", "metal_scrap_panel"], "output": "scrap_smelter"},
+	{"input": ["scrap_structure", "plastic_bar", "metal_scrap_panel"], "output": "scrap_dropper_platform", "tool": ["scrap_hammer"]},
 	
 	{"input": ["raw_metal", "raw_metal"], "output": "metal_bar"},
-	{"input": ["metal_bar"], "output": "metal_panel", "tool": "scrap_hammer"},
-	{"input": ["metal_panel", "metal_panel", "metal_panel", "metal_panel"], "output": "metal_structure", "tool": "scrap_hammer"}, 
-	{"input": ["metal_structure", "metal_bar", "carbon_dust"], "output": "metal_smelting_structure", "tool": "scrap_hammer"},
+	{"input": ["metal_bar"], "output": "metal_panel", "tool": ["scrap_hammer", "metal_hammer"]},
+	{"input": ["plastic_handle", "metal_bar"], "output": "metal_hammer"},
+	
+	{"input": ["metal_panel", "metal_panel", "metal_panel", "metal_panel"], "output": "metal_structure", "tool": ["scrap_hammer", "metal_hammer"]}, 
+	{"input": ["metal_structure", "metal_bar", "carbon_dust"], "output": "metal_smelting_structure", "tool": ["scrap_hammer", "metal_hammer"]},
 	{"input": ["metal_smelting_structure", "metal_panel"], "output": "basic_smelter"},
 	
-	{"input": ["platic_handle", "metal_bar"], "output": "metal_hammer"},
+	{"input": ["metal_panel", "metal_panel"], "output": "metal_block", "tool": ["metal_hammer"]},
 	
-	{"input": ["metal_panel", "metal_panel"], "output": "metal_block", "tool": "metal_hammer"},
-	{"input": ["metal_block"], "output": "metal_cast", "tool": "metal_hammer"},
+	{"input": ["metal_block"], "output": "metal_cast", "tool": ["metal_hammer"]},
+	{"input": ["metal_structure", "metal_block", "metal_bar"], "output": "basic_press", "tool": ["scrap_hammer", "metal_hammer"]},
+	{"input": ["metal_structure", "metal_block", "metal_panel"], "output": "basic_tube_mill", "tool": ["scrap_hammer", "metal_hammer"]},
 ]
 
 # Structures
 # Key(item_type): Array([atlas_coords, PackagedScene])
-const structure_atlas_coords: Dictionary = {
-	"scrap_smelter": [Vector2i(1, 0), preload("res://Scenes/Structures/ScrapSmelter.tscn")],
-	"basic_smelter": [Vector2i(1, 1), preload("res://Scenes/Structures/BasicSmelter.tscn")],
-	"metal_cast": [Vector2i(1, 2), preload("res://Scenes/Structures/MetalCast.tscn")],
+var structure_atlas_coords: Dictionary = {
+	"scrap_smelter": [Vector2i(1, 0), preload("res://Scenes/Structures/ScrapSmelter.tscn"), ["metal_scrap", "carbon_dust"]],
+	"scrap_dropper_platform": [Vector2i(1, 1), preload("res://Scenes/Structures/ScrapDropperPlatform.tscn"), []],
+	"basic_smelter": [Vector2i(1, 2), preload("res://Scenes/Structures/BasicSmelter.tscn"), ["metal_scrap", "carbon_dust"]],
+	"metal_cast": [Vector2i(1, 3), preload("res://Scenes/Structures/MetalCast.tscn"), []],
+	"basic_press": [Vector2i(1, 4), preload("res://Scenes/Structures/BasicPress.tscn"), ["metal_scrap_bar", "metal_bar"]],
+	"basic_tube_mill": [Vector2i(1, 5), preload("res://Scenes/Structures/MetalCast.tscn"), []],
+	"scrap_dropper": [Vector2i(1, 3), preload("res://Scenes/Structures/ScrapDropper.tscn"), []],
 }
 
 var structure_recipe_list: Dictionary = {
@@ -79,7 +93,45 @@ var structure_recipe_list: Dictionary = {
 	"basic_smelter": [
 		{"input": ["metal_scrap", "carbon_dust"], "output": "raw_metal", "time": 4}, 
 	],
+	"basic_press": [
+		{"input": ["metal_scrap_bar"], "output": "metal_scrap_panel", "time": 4}, 
+		{"input": ["metal_bar"], "output": "metal_panel", "time": 4}, 
+	]
 }
+
+# Multiblock structure recipes
+var multiblock_recipes: Array = [
+	{
+		"output": "scrap_dropper",
+		"has": ["scrap_dropper_platform"],
+		"pattern": {
+			Vector3i(0, 0, 0): "scrap_dropper_platform", 
+			Vector3i(1, 0, 0): "scrap_dropper_platform", 
+			Vector3i(2, 0, 0): "scrap_dropper_platform", 
+			Vector3i(0, 1, 0): "scrap_dropper_platform", 
+			Vector3i(1, 1, 0): "scrap_dropper_platform", 
+			Vector3i(2, 1, 0): "scrap_dropper_platform", 
+			Vector3i(0, 2, 0): "scrap_dropper_platform", 
+			Vector3i(1, 2, 0): "scrap_dropper_platform", 
+			Vector3i(2, 2, 0): "scrap_dropper_platform", 
+		},
+		"size": Vector3i(3, 3, 1)
+	},
+	{
+		"output": "basic_foundry",
+		"has": ["basic_smelter", "metal_cast"],
+		"pattern": {
+			Vector3i(0, 0, 0): "basic_smelter", 
+			Vector3i(1, 0, 0): "metal_cast", 
+		},
+		"size": Vector3i(2, 1, 1)
+	}
+]
+
+var game: Node2D
+
+func _ready() -> void:
+	game = get_tree().root.get_node("Game")
 
 # Items functions
 func get_item_atlas_coords(item_type: String) -> Vector2i:
@@ -116,7 +168,7 @@ func find_advanced_recipe(items: Array[String], tool: String) -> Dictionary:
 	
 	for recipe in recipe_list:
 		# Check tool requirement
-		if not "tool" in recipe or "tool" in recipe and recipe["tool"] != tool:
+		if not "tool" in recipe or "tool" in recipe and not recipe["tool"].has(tool):
 			continue
 		
 		var required_inputs = recipe["input"]
@@ -139,10 +191,14 @@ func find_advanced_recipe(items: Array[String], tool: String) -> Dictionary:
 	return best_recipe
 
 func find_structure_recipe(items: Array, structure: String) -> Dictionary:
+	if not structure in structure_recipe_list: return {}
+	
 	var best_recipe = {}
 	var best_match_count = -1
 	
 	for recipe in structure_recipe_list[structure]:
+		if not "input" in recipe: continue
+		
 		var required_inputs = recipe["input"]
 		var matched_inputs = []
 		var available_copy = items.duplicate()
@@ -161,6 +217,70 @@ func find_structure_recipe(items: Array, structure: String) -> Dictionary:
 			best_recipe = recipe
 	
 	return best_recipe
+
+func get_alternative_pattern(recipe: Dictionary) -> Dictionary:
+	return rotate_pattern(recipe, Vector3i.UP)
+
+# Pattern is assumed to be orientated to Vector3i.RIGHT, original
+func rotate_pattern(recipe: Dictionary, direction: Vector3i) -> Dictionary:
+	var rotated = recipe.duplicate()
+	var pattern = recipe["pattern"]
+	var size    = recipe["size"]
+	
+	rotated["pattern"] = {}
+	
+	# Rotate positions
+	for position in pattern.keys():
+		var type = pattern[position]
+		
+		if direction == Vector3i.RIGHT:
+			rotated["pattern"][position] = type
+		elif direction == Vector3i.UP:
+			rotated["pattern"][Vector3i(-position.y + (size.y - 1), position.x, position.z)] = type
+	
+	# Rotate size
+	rotated["size"] = size if direction == Vector3i.RIGHT else Vector3i(size.y, size.x, size.z)
+	
+	return rotated
+
+func check_pattern(origin: Vector3i, pattern: Dictionary) -> bool:
+	for position in pattern.keys():
+		var required = pattern[position]
+		var pos = origin + position
+		var structure = get_structure_at(pos)
+		
+		if structure == null or structure.structure_type != required:
+			return false
+	
+	return true
+
+func get_structure_at(position) -> Structure:
+	return game.world.structure_data[position] if has_structure(position) else null
+
+func remove_structure_at(position): 
+	game.world.remove_structure(position)
+
+# position should already be a 'real_position' coordinate
+func create_item(item_type: String, position: Vector3 = Vector3.INF) -> Node:
+	var item = item_instance.instantiate()
+	item.set_item_type(item_type)
+	
+	if position != Vector3.INF:
+		game.world.add_child(item)
+		game.world.entities.append(item)
+		
+		item.set_real_position(position)
+	
+	return item
+
+func is_tile_empty(tile: Vector3i) -> bool:
+	return not has_box(tile) and not has_structure(tile)
+
+func has_box(tile: Vector3i):
+	return tile in game.world.box_data
+
+func has_structure(tile: Vector3i):
+	return tile in game.world.structure_data
 
 func play_landing_animation(position):
 	var cpu_particles = box_landing_anim.instantiate()

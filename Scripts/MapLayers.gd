@@ -1,4 +1,5 @@
 extends Node2D
+class_name World
 
 @export var grid_size: Vector2i = Vector2i(48, 48)
 
@@ -92,6 +93,7 @@ func _process(_delta: float) -> void:
 		handle_entity_collisions(entity)
 
 func create_item(new_position, item_type):
+	print(item_type)
 	var item = item_instance.instantiate()
 	
 	item.set_item_type(item_type)
@@ -103,7 +105,7 @@ func create_item(new_position, item_type):
 
 func throw_item(item, from, to, normalized = true):
 	var dir_vector = (to - from).normalized() if normalized else (to - from)
-	var noise = Vector3(randf() * 2 - 1, randf() * 2 - 1, 1)
+	var noise = Vector3.ZERO #Vector3(randf() * 2 - 1, randf() * 2 - 1, 1)
 	
 	item.velocity = Vector3(-2.5, -2.5, 3.125) * (dir_vector + noise)
 
@@ -121,7 +123,7 @@ func get_height_diferences(map_position: Vector3i):
 	return diferences
 
 # Returns the directions where the diference is higher that tolerance
-func can_fall(map_position: Vector3i, tolerance: int = 3):
+func can_fall(map_position: Vector3i, tolerance: int = 1):
 	var diferences = get_height_diferences(map_position)
 	var possible_positions = []
 	
@@ -150,13 +152,22 @@ func place_box(global_pos: Vector3i, coords: Vector2i, items: Array, reload_shad
 	
 	if reload_shadows: place_shadows()
 
-func place_structure(global_pos: Vector3i, coords: Vector2i, _direction: Vector2i, reload_shadows: bool = true):
+func place_structure(global_pos: Vector3i, structure_type: String, direction: Vector3i, reload_shadows: bool = true):
 	var pos = Vector2i(global_pos.x, global_pos.y)
 	var fall_z = global_pos.z
 	
-	layers[fall_z].set_cell(pos, 1, coords, 0)
+	var structure = Global.get_structure_scene(structure_type).instantiate()
+	add_child(structure)
 	
-	heightmap[pos] = max(heightmap.get(pos, -1), fall_z + 1)
+	structure.position = Global.grid_to_screen(global_pos)
+	structure.set_direction(direction)
+	
+	var height = structure.size.z
+	for x in range(structure.size.x):
+		for y in range(structure.size.y):
+			var offset = pos + Vector2i(x, y)
+			heightmap[offset] = max(heightmap.get(offset, -1), fall_z + height)
+			structure_data[global_pos + Vector3i(x, y, 0)] = structure
 	
 	if reload_shadows: place_shadows()
 
@@ -215,8 +226,36 @@ func put_item(selected_tile: Vector3i, item: Object):
 	items.append(item)
 	box_data[selected_tile] = {"items": items}
 
-func has_space(selected_tile: Vector3i):
-	return not box_data.has(selected_tile) or box_data[selected_tile].size() < box_size
+func get_block(tile: Vector3i) -> Node2D:
+	return box_data[tile] if tile in box_data else structure_data[tile] if tile in structure_data else null
+
+func has_space(tile: Vector3i):
+	return box_data.has(tile) and box_data[tile].size() < box_size
+
+func is_tile_empty(tile: Vector3i) -> bool:
+	return not has_box(tile) and not has_structure(tile)
+
+func has_box(tile: Vector3i):
+	return tile in box_data
+
+func has_structure(tile: Vector3i):
+	return tile in structure_data
+
+func remove_structure(pos: Vector3i): 
+	var map_pos = Vector2i(pos.x, pos.y)
+	var structure_size = structure_data[pos].size
+	
+	layers[pos.z].set_cell(map_pos)
+	structure_data[pos].queue_free()
+	structure_data.erase(pos)
+	
+	var height = structure_size.z
+	for x in range(structure_size.x):
+		for y in range(structure_size.y):
+			var offset = map_pos + Vector2i(x, y)
+			heightmap[offset] = max(0, heightmap[offset] - height)
+	
+	place_shadows()
 
 func get_items(selected_tile: Vector3i):
 	if not box_data.has(selected_tile): return []

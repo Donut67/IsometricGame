@@ -1,17 +1,16 @@
+class_name BasicSmelter
 extends ScrapSmelter
 
-func changed_inventory():
-	structure = "basic_structure"
-	super.changed_inventory()
-
-func set_direction(direction: Vector2i):
-	structure_id = 1
-	super.set_direction(direction)
-
-func _on_timer_timeout() -> void:
-	var item = generate_output()
+func _ready() -> void:
+	super._ready()
 	
-	var dir_vector = Vector3(1, 0, 1).normalized() + Vector3(randf() * .25 - .125, randf() * .25 - .125, 0)
-	item.velocity = Vector3(5, 5, 10) * dir_vector
+	structure_type = "basic_smelter"
+
+func _process(delta: float) -> void:
+	super._process(delta)
 	
-	clear_recipe()
+	if output_inventory != []: 
+		var structure = Global.get_structure_at(_get_output_tile_pos())
+		
+		var item = output_inventory.pop_front()
+		structure.add_item(item)

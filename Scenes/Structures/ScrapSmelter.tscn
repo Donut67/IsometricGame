@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cjfh65a75wisk"]
 
 [ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="1_d24sl"]
-[ext_resource type="Script" uid="uid://b8i5nliufquf3" path="res://Scripts/Structures/scrap_smelter.gd" id="1_f3bsv"]
+[ext_resource type="Script" uid="uid://b8i5nliufquf3" path="res://Scripts/Structures/ScrapSmelter.gd" id="1_f3bsv"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f3bsv"]
 radius = 8.0
@@ -11,10 +11,12 @@ bg_color = Color(0.321569, 0.321569, 0.376471, 1)
 border_color = Color(0.8, 0.333333, 0.2, 1)
 
 [node name="ScrapSmelter" type="Node2D" groups=["PlacedStructure"]]
+y_sort_enabled = true
 script = ExtResource("1_f3bsv")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0)
+y_sort_enabled = true
+tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("1_d24sl")
 
 [node name="Area2D" type="Area2D" parent="."]
@@ -30,9 +32,6 @@ offset_right = 8.0
 offset_bottom = -11.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_oqbwo")
 
-[node name="Timer" type="Timer" parent="."]
-one_shot = true
-
 [node name="Label" type="Label" parent="." groups=["PlacedStructure"]]
 offset_left = -54.0
 offset_top = 6.0
@@ -40,5 +39,3 @@ offset_right = 54.0
 offset_bottom = 18.0
 theme_override_font_sizes/font_size = 6
 horizontal_alignment = 1
-
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

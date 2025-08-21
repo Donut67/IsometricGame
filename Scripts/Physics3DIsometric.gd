@@ -30,6 +30,7 @@ func _physics_process(delta):
 
 	# Snap 3D position to screen (2D)
 	var screen_pos: Vector2 = Global.grid_to_screen(real_position)
+	z_index = round(real_position.z)
 	position = screen_pos
 
 func apply_friction(delta: float) -> void:

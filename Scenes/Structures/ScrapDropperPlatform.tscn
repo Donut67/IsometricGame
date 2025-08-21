@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxagm17nxbo28"]
+
+[ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="1_rmcu5"]
+[ext_resource type="Script" uid="uid://dh1h006p8ii77" path="res://Scripts/Structures/ScrapDropperPlatform.gd" id="1_xg5oe"]
+
+[node name="ScrapDropperPlatform" type="Node2D" groups=["PlacedStructure"]]
+z_index = -2
+script = ExtResource("1_xg5oe")
+size = Vector3i(1, 1, 0)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+y_sort_enabled = true
+tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+tile_set = ExtResource("1_rmcu5")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

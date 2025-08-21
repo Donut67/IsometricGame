@@ -1,7 +1,6 @@
-class_name MetalCast
+class_name BasicPress
 extends Structure
 
 func _ready() -> void:
 	super._ready()
-	
-	structure_type = "metal_cast"
+	structure_type = "basic_press"

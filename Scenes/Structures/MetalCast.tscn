@@ -7,10 +7,12 @@
 radius = 8.0
 
 [node name="MetalCast" type="Node2D" groups=["PlacedStructure"]]
+y_sort_enabled = true
 script = ExtResource("1_qa50b")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 1, 0, 2, 0, 0, 0)
+y_sort_enabled = true
+tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0)
 tile_set = ExtResource("1_shj3m")
 
 [node name="Area2D" type="Area2D" parent="."]
