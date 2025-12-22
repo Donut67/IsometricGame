@@ -2,7 +2,7 @@
 
 [ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_hkd1e"]
 [ext_resource type="StyleBox" uid="uid://y67md8rk0qqs" path="res://addons/object_flow_editor/styles/title_tool.tres" id="2_8dacl"]
-[ext_resource type="Script" uid="uid://poflnucs7aab" path="res://addons/object_flow_editor/drops.gd" id="3_vadut"]
+[ext_resource type="Script" uid="uid://gij6rcrbfkk5" path="res://addons/object_flow_editor/drops.gd" id="3_vadut"]
 
 [node name="drops" type="GraphNode" groups=["Tool"]]
 theme_override_styles/panel = ExtResource("1_hkd1e")

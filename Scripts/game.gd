@@ -71,10 +71,8 @@ func _process(delta: float) -> void:
 			player.strenght.set_strenght(throw_height / 5)
 			charging_time = 0
 	
-	var what_holding = null if player.holding_item == null else player.holding_item.get_groups()[0]
-	
-	if what_holding == null: mouse_collision.shape.radius = 1
-	elif what_holding == "Tool": mouse_collision.shape.radius = 7
+	if player.holding_item == null: mouse_collision.shape.radius = 1
+	elif player.holding_item.get_groups()[0] == "Tool": mouse_collision.shape.radius = 7
 	else: mouse_collision.shape.radius = 3
 	
 	get_front_tile()

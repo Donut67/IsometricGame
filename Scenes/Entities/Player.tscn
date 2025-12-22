@@ -1,6 +1,6 @@
 [gd_scene load_steps=64 format=3 uid="uid://b1jubpkv3ltgc"]
 
-[ext_resource type="Texture2D" uid="uid://dd02idyy3y74x" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png" id="2_5f5w1"]
+[ext_resource type="Texture2D" uid="uid://bodd6aqbssppx" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png" id="2_5f5w1"]
 [ext_resource type="PackedScene" uid="uid://bg1bv8i6h57ap" path="res://Scenes/Objects/Heart.tscn" id="3_agccv"]
 [ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="4_g4oe6"]
 [ext_resource type="Script" uid="uid://c5l6r2vb00d7p" path="res://Scripts/Player.gd" id="10"]

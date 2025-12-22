@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://wxmno27u1ma6"]
 
 [ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="1_61twt"]
-[ext_resource type="Script" uid="uid://dc0sgr56goj1v" path="res://Scripts/MapLayers.gd" id="1_jqda3"]
+[ext_resource type="Script" uid="uid://bvyb4wo5n8i8b" path="res://Scripts/MapLayers.gd" id="1_jqda3"]
 [ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="3_1n6g7"]
 
 [node name="MapLayers" type="Node2D"]

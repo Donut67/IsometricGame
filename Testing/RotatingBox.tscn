@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://chvwc3sqpb04v"]
 
-[ext_resource type="Script" uid="uid://crfvbbinuejg1" path="res://Testing/rotating_box.gd" id="1_q0idm"]
-[ext_resource type="Texture2D" uid="uid://dol5o5ovun3re" path="res://Assets/6-face-rotations.png" id="2_fpwyo"]
+[ext_resource type="Script" uid="uid://bo2v1ophwohtr" path="res://Testing/rotating_box.gd" id="1_q0idm"]
+[ext_resource type="Texture2D" uid="uid://diin1xd2fc3xm" path="res://Assets/6-face-rotations.png" id="2_fpwyo"]
 [ext_resource type="Texture2D" uid="uid://dlb5bcvrs74uv" path="res://Assets/6-face-rotations-mid.png" id="3_fpwyo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fpwyo"]

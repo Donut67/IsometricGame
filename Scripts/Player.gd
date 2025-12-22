@@ -15,7 +15,6 @@ var holding_item: Node = null
 var items_in_range: Array = []
 var structures_in_range: Array = []
 
-const ARROW = preload("res://Scenes/Entities/Arrow.tscn")
 const directions: Dictionary = {
 	Vector2( 0,  1): 0,
 	Vector2( 1,  1): 1,
@@ -29,7 +28,7 @@ const directions: Dictionary = {
 
 @onready var strenght = $Heart
 
-@export var vel = 360
+@export var vel = 128
 @export var animation_tree : AnimationTree
 
 func _ready():

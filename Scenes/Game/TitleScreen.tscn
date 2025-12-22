@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://gxo8iofplohg" path="res://Scripts/Title Screen.gd" id="1"]
 [ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="2_xaqdv"]
 [ext_resource type="StyleBox" uid="uid://hf83w6sdv6xk" path="res://Stylebox/button_flat.tres" id="3_ylc3l"]
-[ext_resource type="Texture2D" uid="uid://61qetah5ide2" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character_Icon.png" id="4_4nk7f"]
-[ext_resource type="Texture2D" uid="uid://d2siw1atyyxl7" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Boy_Character_Icon.png" id="5_ta8ly"]
-[ext_resource type="Texture2D" uid="uid://dlat2le20xlo5" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Girl_Character_Icon.png" id="6_lqo0b"]
+[ext_resource type="Texture2D" uid="uid://cr7h0msgfq5bx" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character_Icon.png" id="4_4nk7f"]
+[ext_resource type="Texture2D" uid="uid://bs4kl5ah5nmys" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Boy_Character_Icon.png" id="5_ta8ly"]
+[ext_resource type="Texture2D" uid="uid://cqojc7a8vaptd" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Girl_Character_Icon.png" id="6_lqo0b"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f0p4s"]
 bg_color = Color(0.607843, 0.607843, 0.607843, 0.607843)

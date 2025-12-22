@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bxgrw8joox2ua"]
 
-[ext_resource type="Script" uid="uid://dh83pxv8uvkoh" path="res://Scripts/Structures/ScrapDropper.gd" id="1_n4mb0"]
+[ext_resource type="Script" uid="uid://cdfspiyua2k82" path="res://Scripts/Structures/ScrapDropper.gd" id="1_n4mb0"]
 [ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="1_ttu2v"]
 
 [node name="ScrapDropper" type="Node2D" groups=["PlacedStructure"]]

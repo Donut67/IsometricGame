@@ -1,5 +1,5 @@
-class_name BoxEntity
 extends Physics3DIsometric
+class_name BoxEntity
 
 var grid_position: Vector3i
 var time_since_last_fall: float = 0
@@ -240,9 +240,9 @@ func get_nth_item(index: int):
 	return item
 
 func has_box_on_top() -> bool:
-	for box in boxes_on_top:
+	for local_box in boxes_on_top:
 		var flat_1 = Vector2(real_position.x, real_position.y)
-		var flat_2 = Vector2(box.real_position.x, box.real_position.y)
+		var flat_2 = Vector2(local_box.real_position.x, local_box.real_position.y)
 		
 		if flat_1.distance_to(flat_2) < 0.75: return true
 	

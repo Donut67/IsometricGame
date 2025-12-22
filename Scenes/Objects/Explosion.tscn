@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bk7aolti4ukoj"]
 
-[ext_resource type="Texture2D" uid="uid://b4p01dgylefeb" path="res://Assets/Character/Particle.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://fh2ax0ywdq1x" path="res://Assets/Character/Particle.png" id="1"]
 
 [sub_resource type="Curve" id="1"]
 _limits = [-360.0, 360.0, 0.0, 1.0]
@@ -17,12 +17,12 @@ spread = 180.0
 angular_velocity_curve = SubResource("2")
 gravity = Vector3(0, 0, 0)
 
-[node name="Explosion" type="Particles2D"]
+[node name="Explosion" type="GPUParticles2D"]
 emitting = false
 amount = 32
+texture = ExtResource("1")
 lifetime = 0.75
 one_shot = true
 speed_scale = 2.0
 explosiveness = 0.5
 process_material = SubResource("3")
-texture = ExtResource("1")

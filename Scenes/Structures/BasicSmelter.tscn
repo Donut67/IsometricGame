@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cr68y2evmstch"]
 
-[ext_resource type="Script" uid="uid://cbi4wkntqjg1w" path="res://Scripts/Structures/BasicSmelter.gd" id="1_aryov"]
+[ext_resource type="Script" uid="uid://c7honxcm6fxcx" path="res://Scripts/Structures/BasicSmelter.gd" id="1_aryov"]
 [ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="2_3pq8v"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f3bsv"]

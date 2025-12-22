@@ -2,7 +2,7 @@
 
 [ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_ibqhu"]
 [ext_resource type="StyleBox" uid="uid://y67md8rk0qqs" path="res://addons/object_flow_editor/styles/title_tool.tres" id="2_my566"]
-[ext_resource type="Script" uid="uid://bn316xdrs6e5" path="res://addons/object_flow_editor/hit_sequence_node.gd" id="3_5rkew"]
+[ext_resource type="Script" uid="uid://b4khqpkw4rbr2" path="res://addons/object_flow_editor/hit_sequence_node.gd" id="3_5rkew"]
 
 [node name="hit_sequence_node" type="GraphNode"]
 offset_right = 9.0

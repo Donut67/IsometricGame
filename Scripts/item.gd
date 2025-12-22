@@ -1,5 +1,5 @@
-extends Physics3DIsometric
 class_name Item
+extends Physics3DIsometric
 
 var item_type: String = ""
 

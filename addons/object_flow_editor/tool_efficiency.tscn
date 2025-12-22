@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://d2fdk5l2jxfqm"]
 
 [ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_kalnc"]
-[ext_resource type="Script" uid="uid://dgbayk18vohbb" path="res://addons/object_flow_editor/tool_efficiency.gd" id="1_maiw5"]
+[ext_resource type="Script" uid="uid://jaupxpvsend3" path="res://addons/object_flow_editor/tool_efficiency.gd" id="1_maiw5"]
 [ext_resource type="StyleBox" uid="uid://dvjqalnd4vagv" path="res://addons/object_flow_editor/styles/title_resource.tres" id="2_mio6b"]
 
 [node name="tool_efficiency" type="GraphNode"]

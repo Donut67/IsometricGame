@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://ck1mgwa332ofx"]
 
-[ext_resource type="Script" uid="uid://btl1ey4n5ptoa" path="res://addons/object_flow_editor/source_node.gd" id="1_toots"]
+[ext_resource type="Script" uid="uid://0o1gico0jvea" path="res://addons/object_flow_editor/source_node.gd" id="1_toots"]
 [ext_resource type="StyleBox" uid="uid://mrqu4avxq538" path="res://addons/object_flow_editor/styles/panel_base.tres" id="1_ym0dc"]
 [ext_resource type="StyleBox" uid="uid://q67m3dc5vc16" path="res://addons/object_flow_editor/styles/title_source.tres" id="2_pyhqa"]
 

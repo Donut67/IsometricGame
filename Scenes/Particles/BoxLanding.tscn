@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=3 uid="uid://cm8elqgvcmahc"]
 
-[ext_resource type="Script" uid="uid://v32bpxlgxm4e" path="res://Scripts/BoxLanding.gd" id="1_alp0d"]
-[ext_resource type="Texture2D" uid="uid://b7o86mqpgos4v" path="res://Assets/isometric boxes - free pixel assets/landing_efect1.png" id="1_b7oxu"]
-[ext_resource type="Texture2D" uid="uid://bstxy0kg7ft7l" path="res://Assets/isometric boxes - free pixel assets/landing_efect2.png" id="2_alp0d"]
-[ext_resource type="Texture2D" uid="uid://bpdbiabo3rqke" path="res://Assets/isometric boxes - free pixel assets/landing_efect3.png" id="3_t586w"]
-[ext_resource type="Texture2D" uid="uid://bw6xr7qk1jkhn" path="res://Assets/isometric boxes - free pixel assets/landing_efect4.png" id="4_4gxco"]
-[ext_resource type="Texture2D" uid="uid://33ql4lluupow" path="res://Assets/isometric boxes - free pixel assets/landing_efect5.png" id="5_g3kj1"]
-[ext_resource type="Texture2D" uid="uid://b5h4iyo1wtts3" path="res://Assets/isometric boxes - free pixel assets/landing_efect6.png" id="6_pufjn"]
+[ext_resource type="Script" uid="uid://vmfvxcciah62" path="res://Scripts/BoxLanding.gd" id="1_alp0d"]
+[ext_resource type="Texture2D" uid="uid://pq76piumhjqx" path="res://Assets/isometric boxes - free pixel assets/landing_efect1.png" id="1_b7oxu"]
+[ext_resource type="Texture2D" uid="uid://clppjkqtgwh7j" path="res://Assets/isometric boxes - free pixel assets/landing_efect2.png" id="2_alp0d"]
+[ext_resource type="Texture2D" uid="uid://cb3ikbrgbuknd" path="res://Assets/isometric boxes - free pixel assets/landing_efect3.png" id="3_t586w"]
+[ext_resource type="Texture2D" uid="uid://cw21kaorihxxm" path="res://Assets/isometric boxes - free pixel assets/landing_efect4.png" id="4_4gxco"]
+[ext_resource type="Texture2D" uid="uid://cms22merot51k" path="res://Assets/isometric boxes - free pixel assets/landing_efect5.png" id="5_g3kj1"]
+[ext_resource type="Texture2D" uid="uid://beydqwhe8ypli" path="res://Assets/isometric boxes - free pixel assets/landing_efect6.png" id="6_pufjn"]
 
 [sub_resource type="Animation" id="Animation_pwsx5"]
 length = 0.001

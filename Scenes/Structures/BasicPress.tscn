@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://mqt8xpmrbot1"]
 
-[ext_resource type="Script" uid="uid://cnouqxqppcweg" path="res://Scripts/Structures/BasicPress.gd" id="1_pavc2"]
+[ext_resource type="Script" uid="uid://cyl1rvyj2x1kg" path="res://Scripts/Structures/BasicPress.gd" id="1_pavc2"]
 [ext_resource type="TileSet" uid="uid://dbiujvhvlb54u" path="res://TileSets/8-direction-objects.tres" id="1_sr831"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pavc2"]

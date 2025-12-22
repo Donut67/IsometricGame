@@ -5,7 +5,7 @@ direction = Vector3(0, -1, 0)
 spread = 135.0
 gravity = Vector3(0, -98, 0)
 
-[node name="SpawnParticles" type="Particles2D"]
+[node name="SpawnParticles" type="GPUParticles2D"]
 scale = Vector2(6, 6)
 emitting = false
 amount = 32

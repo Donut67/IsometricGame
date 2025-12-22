@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dpe1jmhtalcho"]
 
 [ext_resource type="PackedScene" uid="uid://wxmno27u1ma6" path="res://Scenes/Objects/MapLayers.tscn" id="1_rdw05"]
-[ext_resource type="Script" uid="uid://bkm00colv1tof" path="res://Scripts/Game.gd" id="1_xbxml"]
+[ext_resource type="Script" uid="uid://c8v6hxhy5ssd2" path="res://Scripts/game.gd" id="1_xbxml"]
 [ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="4_ln2h6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ln2h6"]
