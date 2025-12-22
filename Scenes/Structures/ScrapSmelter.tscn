@@ -26,6 +26,8 @@ position = Vector2(0, -3)
 shape = SubResource("CircleShape2D_f3bsv")
 
 [node name="Panel" type="Panel" parent="."]
+z_index = 1
+y_sort_enabled = true
 offset_left = -8.0
 offset_top = -13.0
 offset_right = 8.0

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dm7nwqknd5n7c"]
+[gd_scene load_steps=5 format=3 uid="uid://dm7nwqknd5n7c"]
 
 [ext_resource type="Script" uid="uid://cc7lav4iodgbk" path="res://Scripts/Item.gd" id="1_r82ly"]
 [ext_resource type="TileSet" uid="uid://dp0ttdaxggma1" path="res://TileSets/items.tres" id="2_jqgq0"]
+[ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="3_kugfl"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_kugfl"]
 radius = 6.0
@@ -13,10 +14,18 @@ bounciness = 0.1
 friction = 20.0
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
+[node name="Item" type="TileMapLayer" parent="."]
 y_sort_enabled = true
 tile_map_data = PackedByteArray(0, 0, 255, 255, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)
 tile_set = ExtResource("2_jqgq0")
+
+[node name="Shadow" type="TileMapLayer" parent="."]
+z_index = -10
+y_sort_enabled = true
+position = Vector2(-8, -4)
+tile_map_data = PackedByteArray(0, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0)
+tile_set = ExtResource("3_kugfl")
+collision_enabled = false
 
 [node name="Area2D" type="Area2D" parent="."]
 

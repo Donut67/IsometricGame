@@ -5,15 +5,20 @@ var item_type: String = ""
 
 func _ready():
 	var shader = load("res://Assets/outline.gdshader")
-	$TileMapLayer.material = ShaderMaterial.new()
-	$TileMapLayer.material.set("shader", shader)
-	$TileMapLayer.material.set("shader_parameter/width", 0)
+	$Item.material = ShaderMaterial.new()
+	$Item.material.set("shader", shader)
+	$Item.material.set("shader_parameter/width", 0)
 	
 	size = Vector3.ONE * 0.5
 
+func _physics_process(delta: float) -> void:
+	super._physics_process(delta)
+	
+	$Shadow.position = Global.grid_to_screen(Vector3(real_position.z - .5, .25, -real_position.z))
+
 func set_item_type(item: String):
 	item_type = item
-	$TileMapLayer.set_cell(Vector2i(-1, 0), 1, Global.get_item_atlas_coords(item_type))
+	$Item.set_cell(Vector2i(-1, 0), 1, Global.get_item_atlas_coords(item_type))
 	
 	var type = Global.get_item_group(item_type)
 	if type != "":
@@ -28,4 +33,4 @@ func set_real_position(real_pos: Vector3):
 	position = Global.grid_to_screen(real_position)
 
 func highlight(value: bool):
-	$TileMapLayer.material.set("shader_parameter/width", 1 if value else 0)
+	$Item.material.set("shader_parameter/width", 1 if value else 0)

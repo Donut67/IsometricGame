@@ -5,10 +5,12 @@ extends Node2D
 @onready var mouse_area = $MouseArea
 @onready var mouse_collision = $MouseArea/CollisionShape2D
 
+const box_landing_anim = preload("res://Scenes/Particles/BoxLanding.tscn")
+
 @export var snap_threshold := 0.01
 @export var mouse_query_radius := 8.0
 
-var player : CharacterBody2D
+var player : Player
 
 # Track currently highlighted object
 var closest_target: Node2D = null
@@ -34,9 +36,6 @@ var placement_position: Vector3i
 var throw_height: float = 0
 var charging_time: float = 0
 var is_throw_charging: bool = false
-
-var closest_item: Node2D = null
-var closest_structure: Node2D = null
 
 const player_instance = preload("res://Scenes/Entities/Player.tscn")
 const box_entity_instance = preload("res://Scenes/Entities/Box.tscn")
@@ -84,9 +83,12 @@ func _process(delta: float) -> void:
 
 func _get_closest_valid(range_a: Array, range_b: Array, exclude : Node2D = null):
 	var list = []
+	var player_real_poisition = Global.screen_to_grid_f(player.position, 0)
+	
 	for i in Global.intersect(range_a, range_b):
-		if is_instance_valid(i) and i != exclude:
+		if is_instance_valid(i) and i != exclude and i.get_real_position().distance_to(player_real_poisition) < 4:
 			list.append(i)
+	
 	return get_closest_item(get_global_mouse_position(), list) if list.size() > 0 else null
 
 func _dist_to_mouse(obj) -> float:
@@ -103,6 +105,7 @@ func _highlight_target(new_target: Node2D) -> void:
 
 	# Update reference
 	closest_target = new_target
+	#print(closest_target)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ATTACK"):
@@ -122,28 +125,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		placement_position.z = max(placement_position.z - 1, 0)
 
 func _handle_pickup() -> void:
-	#if closest_target != null and closest_target.is_in_group("Structure"): return
+	if closest_target == null or (not closest_target.is_in_group("Item") and not closest_target.is_in_group("BoxEntity")): return
 	
-	var selected_tile = placement_position
-	var selected_tile_coords = world.layers[0].get_cell_atlas_coords(Vector2i(selected_tile.x, selected_tile.y))
-	
-	if closest_target != null and closest_target.is_in_group("Item"):
-		closest_target.set_real_position(Vector3.ZERO)
-		closest_target.get_parent().remove_child(closest_target)
-		world.entities.erase(closest_target)
-		closest_target.apply_gravity = false
-		
-		player.set_holding_item(closest_target)
-	elif world.box_data.has(selected_tile): 
-		var box_entity = box_entity_instance.instantiate()
-		player.set_holding_item(box_entity)
-		
-		box_entity.items = world.get_items(selected_tile)
-		box_entity.set_grid_position(Vector3.ZERO, selected_tile_coords)
-		box_entity.apply_gravity = false
-		
-		world.delete_box(selected_tile, true, false)
-		world.box_data.erase(selected_tile)
+	world.entities.erase(closest_target)
+	player.set_holding_item(closest_target)
 
 func _handle_fusion() -> void:
 	if closest_target != null and closest_target.is_in_group("PlacedStructure") and "trowel" in player.holding_item.item_type:
@@ -200,58 +185,67 @@ func _handle_fusion() -> void:
 func _handle_place() -> void:
 	if not player.holding_item: return
 	
-	var selected_tile = placement_position
-	if _can_place_item(placement_position):
-		var what_holding = player.holding_item.get_groups()[0]
+	if player.holding_item.is_in_group("BoxEntity"):
+		if closest_target == null or not closest_target.is_in_group("Item"): return
 		
-		if what_holding == "BoxEntity":
-			world.place_box(selected_tile, player.holding_item.atlas_coords, player.holding_item.items)
-		elif what_holding == "Structure":
-			var tile = Global.grid_to_screen(selected_tile)
-			var pos  = player.position
-			var direction
+		if player.holding_item.has_space():
+			var pos = closest_target.global_position
 			
-			if tile.x > pos.x: 
-				if tile.y > pos.y: direction = Vector3i.LEFT
-				else: direction = Vector3i.UP
-			else:
-				if tile.y > pos.y: direction = Vector3i.DOWN
-				else: direction = Vector3i.RIGHT
+			closest_target.get_parent().remove_child(closest_target)
 			
-			world.place_structure(selected_tile, player.holding_item.item_type, direction)
-			#_try_fuse_multiblock(selected_tile) 
+			if items_in_range.has(closest_target): items_in_range.erase(closest_target)
+			if player.items_in_range.has(closest_target): player.items_in_range.erase(closest_target)
+			if world.entities.has(closest_target): world.entities.erase(closest_target)
+			
+			player.holding_item.put_item(closest_target)
+			
+			var cpu_particles = box_landing_anim.instantiate()
+			add_sibling(cpu_particles)
+			
+			cpu_particles.z_index = z_index
+			cpu_particles.global_position = pos
+			cpu_particles.play()
+	elif player.holding_item.is_in_group("Structure") and _can_place_item(placement_position):
+		var tile = Global.grid_to_screen(placement_position)
+		var pos  = player.position
+		var direction
+		
+		if tile.x > pos.x: 
+			if tile.y > pos.y: direction = Vector3i.LEFT
+			else: direction = Vector3i.UP
+		else:
+			if tile.y > pos.y: direction = Vector3i.DOWN
+			else: direction = Vector3i.RIGHT
+		
+		world.place_structure(placement_position, player.holding_item.item_type, direction)
 		player.remove_holding_item()
 
 func _can_place_item(pos: Vector3i) -> bool:
 	return not world.has_box(pos) and not world.has_structure(pos)
 
 func _handle_retrieve_item() -> void:
-	var selected_tile = placement_position
-	var over_selected_tile_type = world.layers[1].get_cell_source_id(Vector2i(placement_position.x, placement_position.y))
+	if closest_target == null or not closest_target.is_in_group("BoxEntity") or closest_target.has_box_on_top(): return
 	
-	if not world.has_box(selected_tile) or over_selected_tile_type != -1: return 
+	var item = closest_target.get_last_item()
 	
-	var items: Array = world.box_data[selected_tile]["items"]
+	if item == null: return
 	
-	if items.size() != 0:
-		var item = items.pop_back()
-		world.add_child(item)
-		world.entities.append(item)
-		world.box_data[selected_tile] = {"items": items}
-		item.set_real_position(Vector3(selected_tile) + Vector3.BACK)
-		
-		# Throw item towards the player
-		var player_pos = Global.screen_to_grid_f(player.position, 0) + Vector3(randf() * 1 - .5, randf() * 1 - .5, 1)
-		var dir_vector = (player_pos - Vector3(selected_tile) + Vector3.BACK).normalized() + Vector3.BACK
-		item.velocity = Vector3(2.5, 2.5, 5) * dir_vector
+	world.add_child(item)
+	world.entities.append(item)
+	item.set_real_position(closest_target.real_position + Vector3.BACK)
+	
+	# Throw item towards the player
+	var player_pos = Global.screen_to_grid_f(player.position, 0) + Vector3(randf() * 4 - 2, randf() * 4 - 2, 1)
+	var dir_vector = (player_pos - closest_target.real_position + Vector3.BACK).normalized() + Vector3.BACK
+	
+	item.velocity = Vector3(2.5, 2.5, 5) * dir_vector
 
 func _handle_insert_item() -> void:
 	var selected_tile = placement_position
 	var is_structure = closest_target in structures_in_range
 	
 	if not is_structure and not world.has_space(selected_tile): return
-	
-	if not player.holding_item.item_type in Global.structure_atlas_coords[closest_target.structure_type][2]: return
+	if not player.holding_item.item_type in GlobalRecipes.structure_atlas_coords[closest_target.structure_type][2]: return
 	
 	player.holding_item.get_parent().remove_child(player.holding_item)
 	
@@ -270,29 +264,15 @@ func _handle_throw_release() -> void:
 	if not player.holding_item: return
 	if not is_throw_charging: return
 	
-	_throw_item(player.holding_item, throw_height)
+	var item = player.throw_item()
 	
-	player.strenght.set_strenght(0)
-	player.holding_item = null
-	is_throw_charging = false
-
-func _throw_item(item: Node, charge: float) -> void:
-	var mouse_pos = Global.screen_to_grid_f(get_global_mouse_position(), 0)
-	var player_pos = Global.screen_to_grid_f(player.position, 0)
-	var dir_vector = (mouse_pos - player_pos).normalized() + Vector3(0, 0, 1)
-	
-	item.velocity = dir_vector * Vector3(20 if charge > 0 else 0, charge, 1) * Vector3(.5, .5, 1)
-	
-	if item.is_in_group("BoxEntity"):
-		item.set_real_position(Global.screen_to_grid_f(item.global_position, .25), item.atlas_coords)
-		world.box_entities.append(item)
-	elif item.is_in_group("Item"):
-		item.set_real_position(Global.screen_to_grid_f(item.global_position, .25))
-		world.entities.append(item)
+	world.entities.append(item)
 	
 	# Detach item from player
 	item.get_parent().remove_child(item)
 	world.add_child(item)
+	
+	is_throw_charging = false
 
 func _try_fuse_multiblock(origin: Vector3i) -> void:
 	for recipe in Global.multiblock_recipes:
@@ -322,6 +302,8 @@ func _fuse_multiblock(origin: Vector3i, recipe: Dictionary) -> void:
 
 func get_front_tile():
 	interact_layer.clear()
+	
+	if player.holding_item == null or not player.holding_item.is_in_group("Structure") : return
 	
 	var pre_z = placement_position.z
 	placement_position = get_hover_tile()
@@ -372,7 +354,7 @@ func get_closest_item(objective: Vector2, items_list: Array) -> Node2D:
 	return closest
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
-	if area.owner.is_in_group("Item"):
+	if area.owner.is_in_group("Item") or area.owner.is_in_group("BoxEntity"):
 		items_in_range.append(area.owner)
 	elif area.owner.is_in_group("PlacedStructure"):
 		structures_in_range.append(area.owner)
@@ -383,10 +365,11 @@ func _on_area_2d_area_exited(area: Area2D) -> void:
 	elif structures_in_range.has(area.owner):
 		structures_in_range.erase(area.owner)
 
-# DEBUG
+# Array of boxes, box should be {"types": Array[String], "position": Vector3}
 var solicitated_boxes = []
 
 func _ready() -> void:
+	# Spawn player
 	player = player_instance.instantiate()
 	player.position = Vector2(0, 0)
 	
@@ -396,31 +379,39 @@ func _ready() -> void:
 	
 	world.add_child(player)
 	
-	solicitated_boxes.append(["carbon_dust", "metal_scrap", "carbon_dust", "metal_scrap", "basic_smelter", "metal_hammer"])
-	solicitated_boxes.append(["basic_press"])
+	# Spawn initial scrap platform
+	world.place_structure(Vector3i.ZERO, "scrap_dropper_platform", Vector3i.RIGHT)
 	
-	for i in range(0):
-		var possioble_items = ["", "metal_scrap", "carbon_dust", "plastic_chunk"]
-		var box_items = []
-		
-		for j in range(5):
-			var item = possioble_items.pick_random()
-			if item == "": break
-			box_items.append(item)
-		
-		solicitated_boxes.append(box_items)
+	solicitated_boxes.append({"types": ["basic_smelter"], "position": Vector3(0, 0, 31)})
+	#solicitated_boxes.append({"types": ["basic_smelter"], "position": Vector3(0, 0, 31)})
+	#solicitated_boxes.append({"types": ["basic_smelter"], "position": Vector3(0, .8, 31)})
+	
+	# Spawn initial extra resources' piles
+	generate_pile(Vector3.ZERO,    0,   "metal_scrap", 10)
+	generate_pile(Vector3.ZERO, 16.0, "plastic_chunk",  4)
+	generate_pile(Vector3.ZERO, 16.0,   "carbon_dust", 10)
+
+func generate_pile(center: Vector3, radius: float, type: String, ammount: int):
+	var angle = randi() % 360
+	
+	var pile_center = Vector3(round(center.x + radius * cos(angle)), round(center.y + radius * sin(angle)), 0)
+	
+	for i in range(ammount):
+		solicitated_boxes.append({
+			"types": [type, type, type, type], 
+			"position": pile_center + Vector3(randi() % 10 / 10.0 - .5, randi() % 10 / 10.0 - .5, 31)
+		})
 
 func _on_timer_timeout() -> void:
-	if solicitated_boxes.size() == 0: 
-		$Timer.stop()
-		return
+	if solicitated_boxes.size() == 0: return
 	
-	var types = solicitated_boxes.pop_front()
+	var box = solicitated_boxes.pop_front()
 	var items = []
 	
-	for type in types:
+	for type in box["types"]:
 		var item = item_instance.instantiate()
 		item.set_item_type(type)
 		items.append(item)
 	
-	world.place_random_box_entity(Vector3i(0, 0, 31), items)
+	#world.place_random_box_entity(Vector3(randf() * 2 - 1, randf() * 2 - 1, 31), items)
+	world.place_random_box_entity(box["position"], items)

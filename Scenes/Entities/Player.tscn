@@ -1,7 +1,8 @@
-[gd_scene load_steps=60 format=3 uid="uid://b1jubpkv3ltgc"]
+[gd_scene load_steps=64 format=3 uid="uid://b1jubpkv3ltgc"]
 
 [ext_resource type="Texture2D" uid="uid://dd02idyy3y74x" path="res://Assets/Character/Small-8-Direction-Characters_by_AxulArt/Base_Character.png" id="2_5f5w1"]
 [ext_resource type="PackedScene" uid="uid://bg1bv8i6h57ap" path="res://Scenes/Objects/Heart.tscn" id="3_agccv"]
+[ext_resource type="TileSet" uid="uid://ccyqrtd6lolle" path="res://TileSets/box_tileset.tres" id="4_g4oe6"]
 [ext_resource type="Script" uid="uid://c5l6r2vb00d7p" path="res://Scripts/Player.gd" id="10"]
 
 [sub_resource type="Animation" id="Animation_1hsdx"]
@@ -616,10 +617,25 @@ height = 7.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_agccv"]
 radius = 24.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_86atj"]
+bg_color = Color(0.851769, 0.851769, 0.851769, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_agccv"]
+bg_color = Color(1, 1, 1, 1)
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.625597, 0.625597, 0.625597, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4oe6"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 1
+border_width_right = 1
+border_color = Color(0.627451, 0.627451, 0.627451, 1)
+
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_tree") groups=["player"]]
 y_sort_enabled = true
 script = ExtResource("10")
-vel = 48
+vel = 64
 animation_tree = NodePath("AnimationTree")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -631,10 +647,10 @@ hframes = 8
 vframes = 11
 
 [node name="Heart" parent="." instance=ExtResource("3_agccv")]
-offset_left = -6.0
-offset_top = 2.0
-offset_right = 5.0
-offset_bottom = 4.0
+offset_left = -5.0
+offset_top = -19.0
+offset_right = 4.0
+offset_bottom = -17.0
 
 [node name="AttackTimer" type="Timer" parent="."]
 wait_time = 0.4
@@ -694,6 +710,41 @@ position = Vector2(-6, -5)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(-1, -2)
 shape = SubResource("CircleShape2D_agccv")
+
+[node name="Pointer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 3.0
+offset_bottom = 3.0
+
+[node name="Panel" type="Panel" parent="Pointer"]
+layout_mode = 0
+offset_right = 3.0
+offset_bottom = 3.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_86atj")
+
+[node name="Vertical" type="Panel" parent="Pointer"]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 2.0
+offset_bottom = 3.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_agccv")
+
+[node name="Horizontal" type="Panel" parent="Pointer"]
+layout_mode = 0
+offset_top = 1.0
+offset_right = 3.0
+offset_bottom = 2.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_g4oe6")
+
+[node name="Shadow" type="TileMapLayer" parent="."]
+z_index = -10
+y_sort_enabled = true
+position = Vector2(-8, -3)
+tile_map_data = PackedByteArray(0, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0)
+tile_set = ExtResource("4_g4oe6")
+collision_enabled = false
 
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

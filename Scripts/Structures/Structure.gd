@@ -21,7 +21,6 @@ var directions = {
 }
 
 func _ready():
-	# size could be configured per type if you have that data in Global too
 	size = Vector3i(1, 1, 1)
 	
 	var shader = load("res://Assets/outline.gdshader")
@@ -34,6 +33,9 @@ func _process(delta: float) -> void:
 		progress += delta
 		if progress >= current_recipe.time:
 			_finish_recipe()
+
+func get_real_position() -> Vector3:
+	return Global.screen_to_grid(global_position, 0)
 
 func highlight(value: bool):
 	$TileMapLayer.material.set("shader_parameter/width", 1 if value else 0)
@@ -93,6 +95,9 @@ func _generate_output(item_type: String):
 	var from = Global.screen_to_grid_f(global_position, 0) + Vector3(.5, .5, .5) * Vector3(facing_dir)
 	var item = Global.create_item(item_type, from)
 	
-	item.velocity = (Vector3(facing_dir) + Vector3(0, 0, 2)) * 2.5
+	var front = from + Vector3(facing_dir) + Vector3(randf() * 1.5 - .75, randf() * 1.5 - .75, 1)
+	var dir_vector = (front - from).normalized()
+	
+	item.velocity = Vector3(5, 5, 7.5) * dir_vector
 	
 	return item
